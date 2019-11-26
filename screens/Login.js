@@ -50,7 +50,9 @@ export default class Login extends Component {
                 // Handle Errors here.
                 var errorCode = error.code;
                 var errorMessage = error.message;
-                this.setState({error: errorMessage})
+                if (errorMessage) {
+                    this.setState({error: errorMessage})
+                }
                 // ...
             })
         }
