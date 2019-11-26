@@ -20,7 +20,7 @@ export default class NewExpense extends Component {
     state = {
         title: "",
         isSubmitting: false,
-        chosenDate: "10/21/1231",
+        chosenDate: "Date",
         chosenDateO: new Date(),
         openDatePicker: false
     }
@@ -70,10 +70,10 @@ export default class NewExpense extends Component {
                             {label: "Miscellaneous", value: 'miscellaneous'},
                         ]} />
                             <Button title={this.state.chosenDate} onPress={this.handleDatePicker} />
-                    <Button title="img" onPress={() => this.props.navigation.navigate("CameraScreen")} />
+                    <Button title="Camera" onPress={() => this.props.navigation.navigate("CameraScreen")} />
                 </View>
                 {this.state.openDatePicker?(<View>
-                    <DatePickerIOS mode='date' date={this.state.chosenDateO} onDateChange={this.setDate} />:
+                    <DatePickerIOS mode='date' date={this.state.chosenDateO} onDateChange={this.setDate} />
                 </View>):null}
             </KeyboardAvoidingView>
         )
