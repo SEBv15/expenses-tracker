@@ -21,11 +21,12 @@ export default class NewExpense extends Component {
         title: "",
         isSubmitting: false,
         chosenDate: "10/21/1231",
-        chosenDateO: new Date()
+        chosenDateO: new Date(),
+        openDatePicker: false
     }
     handleDatePicker = async () => {
         if (Platform.OS == 'ios') {
-
+            this.setState({openDatePicker: true})
         } else {
         try {
             const { action, year, month, day } = await DatePickerAndroid.open({
@@ -68,12 +69,12 @@ export default class NewExpense extends Component {
                             {label: "Supplies", value: 'supplies'},
                             {label: "Miscellaneous", value: 'miscellaneous'},
                         ]} />
-                    {Platform.OS == 'ios'?
-                            <DatePickerIOS date={this.state.chosenDateO} onDateChange={this.setDate} />:
                             <Button title={this.state.chosenDate} onPress={this.handleDatePicker} />
-                    }
                     <Button title="img" onPress={() => this.props.navigation.navigate("CameraScreen")} />
                 </View>
+                {this.state.openDatePicker?(<View>
+                    <DatePickerIOS mode='date' date={this.state.chosenDateO} onDateChange={this.setDate} />:
+                </View>):null}
             </KeyboardAvoidingView>
         )
     }
