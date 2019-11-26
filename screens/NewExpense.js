@@ -92,7 +92,7 @@ export default class NewExpense extends Component {
                         ]} />
                             <Button title={this.state.chosenDate} onPress={this.handleDatePicker} />
                     <Button title="Camera" onPress={() => this.props.navigation.navigate("CameraScreen")} />
-                    <Button title="Add" onPress={this.handleAdd} />
+                    <Button style={{marginTop: 8}} title="Add" onPress={this.handleAdd} />
                 </View>
                 <Overlay
                     isVisible={this.state.openDatePicker}
