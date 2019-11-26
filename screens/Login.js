@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     View,
     StatusBar,
+    KeyboardAvoidingView
   } from 'react-native';
 
 import { Input, Button } from 'react-native-elements'
@@ -72,7 +73,7 @@ export default class Login extends Component {
     }
     render() {
         return (
-            <View style={styles.container}>
+            <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                 <Text style={styles.title}>{this.props.navigation.getParam('isActuallySignUp', false)?"Sign Up":"Login"}</Text>
                 <Text style={styles.error}>{this.state.error}</Text>
                 <Input
@@ -113,7 +114,7 @@ export default class Login extends Component {
                         loadingProps={{ size: "large", color: "white" }}
                         />
                 </View>
-            </View>
+            </KeyboardAvoidingView>
         )
     }
 }

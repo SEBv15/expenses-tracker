@@ -27,25 +27,25 @@ export default class CameraScreen extends Component {
     render() {
         const { hasCameraPermission } = this.state;
         if (hasCameraPermission === null) {
-          return <View />;
+            return <View />;
         } else if (hasCameraPermission === false) {
-          return <Text>No access to camera</Text>;
+            return <Text>No access to camera</Text>;
         } else {
-        return (
-            <View style={styles.container}>
-                <Camera style={{ flex: 1 }} type={this.state.type} ref={ref => { this.camera = ref }}>
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: 'transparent',
-                flexDirection: 'row',
-              }}>
-                  <Ionicons name="ios-cash" />
-            </View>
-          </Camera>
-            </View>
-        )
-            }
+            return (
+                <View style={styles.container}>
+                    <Camera style={{ flex: 1 }} type={this.state.type} ref={ref => { this.camera = ref }}>
+                        <View
+                        style={{
+                            flex: 1,
+                            backgroundColor: 'transparent',
+                            flexDirection: 'row',
+                        }}>
+                            <Ionicons name="ios-cash" />
+                        </View>
+                    </Camera>
+                </View>
+            )
+        }
     }
 }
 
