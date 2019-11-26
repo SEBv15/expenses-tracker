@@ -15,6 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Input, Button, Overlay } from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select'
+import * as firebase from 'firebase';
+
 
 export default class NewExpense extends Component {
     state = {
@@ -46,6 +48,16 @@ export default class NewExpense extends Component {
     }
     setDate = (date) => {
         this.setState({chosenDateO: date})
+    }
+    handleAdd = () => {
+        var database = firebase.database();
+        var ref = database.ref('expenses/'+firebase.auth().currentUser.uid.replace("/", "")).push()
+        ref.set({
+
+            title: this.state.title,
+            amount: this.state.amount,
+          });
+        
     }
     render() {
         return (
