@@ -5,6 +5,7 @@ import React from 'react';
 
 import MainTabNavigator from './MainTabNavigator';
 import NewExpense from '../screens/NewExpense';
+import CameraScreen from '../screens/CameraScreen';
 
 export default createStackNavigator({
     MainTabNavigator: {
@@ -12,6 +13,9 @@ export default createStackNavigator({
     },
     NewExpense: {
         screen: NewExpense
+    },
+    CameraScreen: {
+        screen: CameraScreen
     }
 },
 {
