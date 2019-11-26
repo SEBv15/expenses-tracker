@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Input, Button } from 'react-native-elements'
+import { Input, Button, Overlay } from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select'
 
 export default class NewExpense extends Component {
@@ -72,9 +72,16 @@ export default class NewExpense extends Component {
                             <Button title={this.state.chosenDate} onPress={this.handleDatePicker} />
                     <Button title="img" onPress={() => this.props.navigation.navigate("CameraScreen")} />
                 </View>
-                {this.state.openDatePicker == false?(<View style={styles.iospicker}>
+                <Overlay
+                    isVisible={this.state.openDatePicker}
+                    windowBackgroundColor="rgba(255, 255, 255, .7)"
+                    overlayBackgroundColor="white"
+                    width="auto"
+                    onBackdropPress={() => this.setState({ openDatePicker: false })}
+                    height="auto"
+                    >
                     <DatePickerIOS mode='date' date={this.state.chosenDateO} onDateChange={this.setDate} />
-                </View>):null}
+                </Overlay>
             </KeyboardAvoidingView>
         )
     }
