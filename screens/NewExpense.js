@@ -21,7 +21,7 @@ export default class NewExpense extends Component {
         title: "",
         isSubmitting: false,
         chosenDate: "10/21/1231",
-        chosenDateO: {}
+        chosenDateO: new Date()
     }
     handleDatePicker = async () => {
         if (Platform.OS == 'ios') {
@@ -69,7 +69,7 @@ export default class NewExpense extends Component {
                             {label: "Miscellaneous", value: 'miscellaneous'},
                         ]} />
                     {Platform.OS == 'ios'?
-                            <DatePickerIOS date={this.state.chosenDate} onDateChange={this.setDate} />:
+                            <DatePickerIOS date={this.state.chosenDateO} onDateChange={this.setDate} />:
                             <Button title={this.state.chosenDate} onPress={this.handleDatePicker} />
                     }
                     <Button title="img" onPress={() => this.props.navigation.navigate("CameraScreen")} />
