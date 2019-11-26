@@ -20,7 +20,7 @@ export default class NewExpense extends Component {
     state = {
         title: "",
         isSubmitting: false,
-        chosenDate: "10/21/1231",
+        chosenDate: "Date",
         chosenDateO: new Date(),
         openDatePicker: false,
         amount: ""
@@ -79,14 +79,14 @@ export default class NewExpense extends Component {
                             {label: "Miscellaneous", value: 'miscellaneous'},
                         ]} />
                             <Button title={this.state.chosenDate} onPress={this.handleDatePicker} />
-                    <Button title="img" onPress={() => this.props.navigation.navigate("CameraScreen")} />
+                    <Button title="Camera" onPress={() => this.props.navigation.navigate("CameraScreen")} />
                     <Button title="Add" onPress={this.handleAdd} />
                 </View>
                 <Overlay
                     isVisible={this.state.openDatePicker}
                     windowBackgroundColor="rgba(255, 255, 255, .5)"
                     overlayBackgroundColor="white"
-                    width="auto"
+                    width= {500}
                     onBackdropPress={() => this.setState({ openDatePicker: false })}
                     height="auto"
                     >
