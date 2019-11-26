@@ -72,8 +72,8 @@ export default class NewExpense extends Component {
                             <Button title={this.state.chosenDate} onPress={this.handleDatePicker} />
                     <Button title="img" onPress={() => this.props.navigation.navigate("CameraScreen")} />
                 </View>
-                {this.state.openDatePicker?(<View>
-                    <DatePickerIOS mode='date' date={this.state.chosenDateO} onDateChange={this.setDate} />:
+                {this.state.openDatePicker == false?(<View style={styles.iospicker}>
+                    <DatePickerIOS mode='date' date={this.state.chosenDateO} onDateChange={this.setDate} />
                 </View>):null}
             </KeyboardAvoidingView>
         )
@@ -94,5 +94,12 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 48,
         textAlign: "center"
+    },
+    iospicker: {
+        position: "absolute",
+        flex: 1,
+        top: 0,
+        left: 0,
+        justifyContent: "center"
     }
 })
