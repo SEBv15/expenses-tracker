@@ -74,13 +74,18 @@ export default class NewExpense extends Component {
                 </View>
                 <Overlay
                     isVisible={this.state.openDatePicker}
-                    windowBackgroundColor="rgba(255, 255, 255, .7)"
+                    windowBackgroundColor="rgba(255, 255, 255, .5)"
                     overlayBackgroundColor="white"
                     width="auto"
                     onBackdropPress={() => this.setState({ openDatePicker: false })}
                     height="auto"
                     >
-                    <DatePickerIOS mode='date' date={this.state.chosenDateO} onDateChange={this.setDate} />
+                    <React.Fragment>
+                        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+                            <Button title="Done" type="clear" onPress={()=>this.setState({openDatePicker: false})} />
+                        </View>
+                        <DatePickerIOS mode='date' date={this.state.chosenDateO} onDateChange={this.setDate} />
+                    </React.Fragment>
                 </Overlay>
             </KeyboardAvoidingView>
         )
