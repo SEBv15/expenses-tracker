@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Expenses Tracker",
+    "name": "Self Accountant",
     "slug": "expenses-tracker",
     "privacy": "public",
     "sdkVersion": "35.0.0",
@@ -25,6 +25,18 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "extra": {
+      "firebase": {
+        "apiKey": "AIzaSyD6eh82seTFdCfhR1olC72GgRa9a4gYDXA",
+        "authDomain": "expenses-tracker-bec88.firebaseapp.com",
+        "databaseURL": "https://expenses-tracker-bec88.firebaseio.com",
+        "projectId": "expenses-tracker-bec88",
+        "storageBucket": "expenses-tracker-bec88.appspot.com",
+        "messagingSenderId": "169352187647",
+        "appId": "1:169352187647:web:7fef622007c8d6459706ca",
+        "measurementId": "G-9XX9QE8DSC"
+      }
     }
   }
 }

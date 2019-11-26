@@ -1,15 +1,15 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import { createStackNavigator, createMaterialTopTabNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
+import DataScreen from '../screens/DataScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
-  default: {},
+  default: { headerMode: "none" },
 });
 
 const HomeStack = createStackNavigator(
@@ -20,14 +20,14 @@ const HomeStack = createStackNavigator(
 );
 
 HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
+  tabBarLabel: 'Feed',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
       name={
         Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
+          ? 'ios-cash'
+          : 'md-cash'
       }
     />
   ),
@@ -35,21 +35,21 @@ HomeStack.navigationOptions = {
 
 HomeStack.path = '';
 
-const LinksStack = createStackNavigator(
+const DataStack = createStackNavigator(
   {
-    Links: LinksScreen,
+    Data: DataScreen,
   },
   config
 );
 
-LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
+DataStack.navigationOptions = {
+  tabBarLabel: 'Data',
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'} />
+    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-eye' : 'md-eye'} />
   ),
 };
 
-LinksStack.path = '';
+DataStack.path = '';
 
 const SettingsStack = createStackNavigator(
   {
@@ -67,10 +67,24 @@ SettingsStack.navigationOptions = {
 
 SettingsStack.path = '';
 
-const tabNavigator = createBottomTabNavigator({
+const tabNavigator = createMaterialTopTabNavigator({
   HomeStack,
-  LinksStack,
+  DataStack,
   SettingsStack,
+}, 
+{
+  tabBarPosition: "bottom",
+  tabBarOptions: {
+    activeTintColor: "green",
+    showIcon: true,
+    showLabel: false,
+    indicatorStyle: {
+      backgroundColor: "grey"
+    },
+    style: {
+      backgroundColor: "white"
+    }
+  }
 });
 
 tabNavigator.path = '';
