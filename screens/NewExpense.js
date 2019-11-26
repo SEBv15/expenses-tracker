@@ -22,7 +22,8 @@ export default class NewExpense extends Component {
         isSubmitting: false,
         chosenDate: "10/21/1231",
         chosenDateO: new Date(),
-        openDatePicker: false
+        openDatePicker: false,
+        amount: ""
     }
     handleDatePicker = async () => {
         if (Platform.OS == 'ios') {
@@ -59,6 +60,14 @@ export default class NewExpense extends Component {
                         onChangeText={value => this.setState({title: value})}
                         editable={!this.state.isSubmitting}
                         />
+                    <Input
+                        placeholder='Amount'
+                        keyboardType="numeric"
+                        value={this.state.amount}
+                        onChangeText={value => this.setState({amount: value})}
+                        errorStyle={{ color: 'red' }}
+                        editable={!this.state.isSubmitting}
+                        />
                     <RNPickerSelect
                         onValueChange={value=>{}}
                         //placeholder={{name:"Select a category...", value: null}}
@@ -71,6 +80,7 @@ export default class NewExpense extends Component {
                         ]} />
                             <Button title={this.state.chosenDate} onPress={this.handleDatePicker} />
                     <Button title="img" onPress={() => this.props.navigation.navigate("CameraScreen")} />
+                    <Button title="Add" onPress={this.handleAdd} />
                 </View>
                 <Overlay
                     isVisible={this.state.openDatePicker}
