@@ -9,16 +9,86 @@ import {
   TouchableOpacity,
   Button,
   View,
+  SectionList,
 } from 'react-native';
+import { NavigationEvents } from 'react-navigation';
 
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 
-import { MonoText } from '../components/StyledText';
+import * as firebase from 'firebase';
+import 'firebase/firestore';
+
+function CategoryIcon({category}) {
+  switch(category) {
+    case "groceries":
+      return <MaterialIcons name="local-grocery-store" />
+    case "clothes":
+      return <Ionicons name={(Platform.OS == 'ios')?"ios-shirt":"md-shirt"} />
+    case "transportation":
+      return <Ionicons name={(Platform.OS == 'ios')?"ios-bus":"md-bus"} />
+    case "supplies":
+      return <Ionicons name={(Platform.OS == 'ios')?"ios-flower":"md-flower"} />
+    case "miscellaneous":
+      return <FontAwesome name="question-circle-o" />
+    default:
+      return <View />
+  }
+}
+
+function Expense({ title, amount, category }) {
+  return (
+    <View style={styles.expenseView}>
+      <CategoryIcon category={category} />
+      <Text style={styles.expenseTitle}>{title}</Text>
+      <Text style={styles.expenseAmount}>${parseFloat(amount).toFixed(2)}</Text>
+    </View>
+  );
+}
+
+function DateTitle({date}) {
+  return (
+    <View style={styles.dateView}>
+      <Text style={styles.date}>{date}</Text>
+    </View>
+  )
+}
 
 export default class HomeScreen extends React.Component {
   state = {
+    lastExpense: null
   }
+  expenses = [
+
+  ]
   componentDidMount() {
+    this.loadExpenses()
+  }
+  loadExpenses = async () => {
+    var ref = firebase
+    .firestore()
+    .collection("expenses")
+    .where("user", "==", firebase.auth().currentUser.uid)
+    .orderBy("date", "desc")
+
+    var data = await ref.limit(20).get()
+
+    this.expenses = []
+    var lastDate = null
+    for (var doc of data.docs) {
+      console.log(doc.data())
+      var date = new Date(doc.get("date"))
+      console.log(date, doc.get("date"))
+      date = date.toDateString()
+      if (lastDate === null || lastDate != date) {
+        lastDate = date
+        this.expenses.push({
+          title: date,
+          data: []
+        })
+      }
+      this.expenses[this.expenses.length - 1].data.push({...doc.data(), ...{ref: doc.ref}})
+    }
+    this.setState({lastExpense: data.docs[data.docs.length - 1]})
   }
   buttonPressHandler = () => {
     this.props.navigation.dangerouslyGetParent().dangerouslyGetParent().navigate("NewExpense")
@@ -26,7 +96,22 @@ export default class HomeScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Expenses</Text>
+        {/*<Text style={styles.title}>Expenses</Text>*/}
+        <NavigationEvents
+          onWillFocus={payload => this.loadExpenses()}
+        />
+        <View style={{height: 24}} />
+        <SectionList
+          sections={this.expenses}
+          style={styles.list}
+          keyExtractor={(item, index) => item.date + index}
+          renderItem={({ item }) => <Expense {...item} />}
+          ItemSeparatorComponent={() => <View style={{height: 1, backgroundColor: "#eee", marginHorizontal: 12}} />}
+          ListFooterComponent={() => <View style={{height: 70}} />}
+          renderSectionHeader={({ section: { title } }) => (
+            <DateTitle date={title} />
+          )}
+        />
         <TouchableOpacity
           style={{
               borderWidth:1,
@@ -66,5 +151,26 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 48,
     textAlign: "center"
+  },
+  dateView: {
+    backgroundColor: "#fafafa",
+    borderTopColor: "#eee",
+    borderTopWidth: 1,
+  },
+  date: {
+    textAlign: "center",
+    color: "#777"
+  },
+  expenseView: {
+    flexDirection: "row",
+    padding: 16
+  },
+  expenseTitle: {
+    fontSize: 20,
+    flex: 1,
+  },
+  expenseAmount: {
+    fontSize: 20,
+    fontFamily: "monospace",
   }
 });

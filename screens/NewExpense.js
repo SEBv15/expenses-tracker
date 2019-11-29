@@ -16,15 +16,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { Input, Button, Overlay } from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select'
 import * as firebase from 'firebase';
-
+import 'firebase/firestore';
 
 export default class NewExpense extends Component {
     state = {
         title: "",
         isSubmitting: false,
-        chosenDate: "Date",
-        chosenDateO: new Date(),
+        chosenDate: new Date(),
         openDatePicker: false,
+        category: "",
         amount: ""
     }
     handleDatePicker = async () => {
@@ -39,7 +39,7 @@ export default class NewExpense extends Component {
             });
             if (action !== DatePickerAndroid.dismissedAction) {
               // Selected year, month (0-11), day
-              this.setState({})
+              this.setState({chosenDate: (new Date(year, month, day))})
             }
           } catch ({ code, message }) {
             console.warn('Cannot open date picker', message);
@@ -47,16 +47,26 @@ export default class NewExpense extends Component {
         }
     }
     setDate = (date) => {
-        this.setState({chosenDateO: date})
+        this.setState({chosenDate: date})
     }
     handleAdd = () => {
-        var database = firebase.database();
-        var ref = database.ref('expenses/'+firebase.auth().currentUser.uid.replace("/", "")).push()
+        var db = firebase.firestore();
+        var expenses = db.collection("expenses")
+        expenses.add({
+            user: firebase.auth().currentUser.uid,
+            title: this.state.title,
+            amount: this.state.amount,
+            date: this.state.chosenDate.getTime(),
+            category: this.state.category,
+            photo: ""
+          })
+        this.props.navigation.goBack();
+        /*var ref = database.ref('expenses/'+firebase.auth().currentUser.uid.replace("/", ""))
         ref.set({
 
             title: this.state.title,
             amount: this.state.amount,
-          });
+          });*/
         
     }
     render() {
@@ -65,7 +75,7 @@ export default class NewExpense extends Component {
                 <Ionicons style={styles.arrowBack} size={48} name={Platform.OS == "ios"?"ios-arrow-back":"md-arrow-back"} onPress={()=>this.props.navigation.goBack()} />
                 <View style={styles.container}>
                     <Text style={styles.title}>New Expense</Text>
-                    <Text>{JSON.stringify(this.state.chosenDateO)}</Text>
+                    <Text>{JSON.stringify(this.state.chosenDate)}</Text>
                     <Input
                         placeholder={"Title"}
                         value={this.state.title}
@@ -81,7 +91,7 @@ export default class NewExpense extends Component {
                         editable={!this.state.isSubmitting}
                         />
                     <RNPickerSelect
-                        onValueChange={value=>{}}
+                        onValueChange={value=>this.setState({category: value})}
                         //placeholder={{name:"Select a category...", value: null}}
                         items={[
                             {label: "Groceries", value: 'groceries'},
@@ -90,7 +100,7 @@ export default class NewExpense extends Component {
                             {label: "Supplies", value: 'supplies'},
                             {label: "Miscellaneous", value: 'miscellaneous'},
                         ]} />
-                            <Button title={this.state.chosenDate} onPress={this.handleDatePicker} />
+                            <Button title={this.state.chosenDate.getDay()} onPress={this.handleDatePicker} />
                     <Button title="Camera" onPress={() => this.props.navigation.navigate("CameraScreen")} />
                     <Button style={{marginTop: 8}} title="Add" onPress={this.handleAdd} />
                 </View>
@@ -106,7 +116,7 @@ export default class NewExpense extends Component {
                         <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
                             <Button title="Done" type="clear" onPress={()=>this.setState({openDatePicker: false})} />
                         </View>
-                        <DatePickerIOS mode='date' date={this.state.chosenDateO} onDateChange={this.setDate} />
+                        <DatePickerIOS mode='date' date={this.state.chosenDate} onDateChange={this.setDate} />
                     </React.Fragment>
                 </Overlay>
             </KeyboardAvoidingView>
