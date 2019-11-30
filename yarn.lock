@@ -858,6 +858,11 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@expo/react-native-touchable-native-feedback-safe@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@expo/react-native-touchable-native-feedback-safe/-/react-native-touchable-native-feedback-safe-1.1.2.tgz#7ef501d5d32140eed657f75f0de145d4a96244d8"
+  integrity sha1-fvUB1dMhQO7WV/dfDeFF1KliRNg=
+
 "@expo/samples@~3.0.3":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@expo/samples/-/samples-3.0.3.tgz#83ade8e4d5cae95c257d5a99767eda66ca04f73e"
@@ -2946,6 +2951,11 @@ expo-font@^7.0.0, expo-font@~7.0.0:
   integrity sha512-OVlUydfexjq1u57Xlymcx5egfFF2WZ5MXkg3GGjHyiSMfp09inZ7OzAu+O/TXjxjlaq9d6vBXiwVxqQoUIlx1Q==
   dependencies:
     fontfaceobserver "^2.1.0"
+
+expo-image-picker@~7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/expo-image-picker/-/expo-image-picker-7.0.0.tgz#e4a5a52bd6f9655f75ecf3cc866aa9bb0c99e24b"
+  integrity sha512-LeGdAqbeuB2KsT369ns1kDtCGbyDCmY2gIFlf/rsD3+UmagRFX9emZLGPEnUNdCWXoctSejjFwxDnCUtpvL6yw==
 
 expo-keep-awake@~7.0.0:
   version "7.0.0"

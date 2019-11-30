@@ -14,6 +14,7 @@ import {
 import { NavigationEvents } from 'react-navigation';
 
 import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import * as firebase from 'firebase';
 import 'firebase/firestore';
@@ -21,27 +22,30 @@ import 'firebase/firestore';
 function CategoryIcon({category}) {
   switch(category) {
     case "groceries":
-      return <MaterialIcons name="local-grocery-store" />
+      return <MaterialIcons size={24} style={styles.categoryIcon} name="local-grocery-store" />
     case "clothes":
-      return <Ionicons name={(Platform.OS == 'ios')?"ios-shirt":"md-shirt"} />
+      return <Ionicons size={24} style={styles.categoryIcon} name={(Platform.OS == 'ios')?"ios-shirt":"md-shirt"} />
     case "transportation":
-      return <Ionicons name={(Platform.OS == 'ios')?"ios-bus":"md-bus"} />
+      return <Ionicons size={24} style={styles.categoryIcon} name={(Platform.OS == 'ios')?"ios-bus":"md-bus"} />
     case "supplies":
-      return <Ionicons name={(Platform.OS == 'ios')?"ios-flower":"md-flower"} />
+      return <Ionicons size={24} style={styles.categoryIcon} name={(Platform.OS == 'ios')?"ios-flower":"md-flower"} />
     case "miscellaneous":
-      return <FontAwesome name="question-circle-o" />
+      return <FontAwesome size={24} style={styles.categoryIcon} name="question-circle-o" />
     default:
-      return <View />
+      return <View style={styles.categoryIcon} />
   }
 }
 
-function Expense({ title, amount, category }) {
+function Expense({ navigate, ...props }) {
   return (
-    <View style={styles.expenseView}>
-      <CategoryIcon category={category} />
-      <Text style={styles.expenseTitle}>{title}</Text>
-      <Text style={styles.expenseAmount}>${parseFloat(amount).toFixed(2)}</Text>
-    </View>
+    <TouchableNativeFeedbackSafe 
+      style={styles.expenseView}
+      onPress={() => navigate("Expense",{...props})}
+      background={TouchableNativeFeedbackSafe.SelectableBackground()}>
+      <CategoryIcon category={props.category} />
+      <Text style={styles.expenseTitle}>{props.title}</Text>
+      <Text style={styles.expenseAmount}>${parseFloat(props.amount).toFixed(2)}</Text>
+    </TouchableNativeFeedbackSafe>
   );
 }
 
@@ -86,7 +90,7 @@ export default class HomeScreen extends React.Component {
           data: []
         })
       }
-      this.expenses[this.expenses.length - 1].data.push({...doc.data(), ...{ref: doc.ref}})
+      this.expenses[this.expenses.length - 1].data.push({...doc.data(), ...{firestoreRef: doc.ref}})
     }
     this.setState({lastExpense: data.docs[data.docs.length - 1]})
   }
@@ -100,14 +104,15 @@ export default class HomeScreen extends React.Component {
         <NavigationEvents
           onWillFocus={payload => this.loadExpenses()}
         />
-        <View style={{height: 24}} />
+        <View style={{height: (Platform.OS == 'ios'?18:24)}} />
         <SectionList
           sections={this.expenses}
           style={styles.list}
           keyExtractor={(item, index) => item.date + index}
-          renderItem={({ item }) => <Expense {...item} />}
+          renderItem={({ item }) => <Expense {...item} navigate={this.props.navigation.navigate} />}
           ItemSeparatorComponent={() => <View style={{height: 1, backgroundColor: "#eee", marginHorizontal: 12}} />}
           ListFooterComponent={() => <View style={{height: 70}} />}
+          stickySectionHeadersEnabled={true}
           renderSectionHeader={({ section: { title } }) => (
             <DateTitle date={title} />
           )}
@@ -172,5 +177,11 @@ const styles = StyleSheet.create({
   expenseAmount: {
     fontSize: 20,
     fontFamily: "monospace",
+  },
+  categoryIcon: {
+    marginRight: 24,
+    marginLeft: 12,
+    marginTop: 2,
+    width: 20
   }
 });

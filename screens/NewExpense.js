@@ -9,7 +9,8 @@ import {
     View,
     KeyboardAvoidingView,
     DatePickerAndroid, 
-    DatePickerIOS
+    DatePickerIOS,
+    Permissions
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -17,6 +18,7 @@ import { Input, Button, Overlay } from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select'
 import * as firebase from 'firebase';
 import 'firebase/firestore';
+import * as ImagePicker from 'expo-image-picker';
 
 export default class NewExpense extends Component {
     state = {
@@ -25,7 +27,11 @@ export default class NewExpense extends Component {
         chosenDate: new Date(),
         openDatePicker: false,
         category: "",
-        amount: ""
+        amount: "",
+        img64: ""
+    }
+    componentDidMount() {
+        this.getPermissionAsync()
     }
     handleDatePicker = async () => {
         if (Platform.OS == 'ios') {
@@ -58,7 +64,7 @@ export default class NewExpense extends Component {
             amount: this.state.amount,
             date: this.state.chosenDate.getTime(),
             category: this.state.category,
-            photo: ""
+            photo: this.state.img64
           })
         this.props.navigation.goBack();
         /*var ref = database.ref('expenses/'+firebase.auth().currentUser.uid.replace("/", ""))
@@ -69,10 +75,46 @@ export default class NewExpense extends Component {
           });*/
         
     }
+    
+    _pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.3,
+            base64: true
+        });
+
+        if (!result.cancelled) {
+            this.setState({ img64: result.base64 });
+        }
+    };
+    launchCamera = async () => {
+        const { cancelled, width, height, base64 } = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: false,
+            aspect: [4, 3],
+            quality: 0.3,
+            base64: true
+        })
+        if (!cancelled) {
+            this.setState({img64: base64})
+        }
+    }
+    getPermissionAsync = async () => {
+        const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+        if (status !== 'granted') {
+            alert('Sorry, we need camera roll permissions to make this work!');
+        }
+        status = await Permissions.askAsync(Permissions.CAMERA).status;
+        if (status !== 'granted') {
+            alert('Sorry, we need camera permissions too!');
+        }
+    }
     render() {
         return (
             <KeyboardAvoidingView style={styles.outer} behavior="padding" enabled>
-                <Ionicons style={styles.arrowBack} size={48} name={Platform.OS == "ios"?"ios-arrow-back":"md-arrow-back"} onPress={()=>this.props.navigation.goBack()} />
+                <Ionicons style={styles.close} size={48} name={Platform.OS == "ios"?"ios-close":"md-close"} onPress={()=>this.props.navigation.goBack()} />
                 <View style={styles.container}>
                     <Text style={styles.title}>New Expense</Text>
                     <Text>{JSON.stringify(this.state.chosenDate)}</Text>
@@ -100,8 +142,11 @@ export default class NewExpense extends Component {
                             {label: "Supplies", value: 'supplies'},
                             {label: "Miscellaneous", value: 'miscellaneous'},
                         ]} />
-                            <Button title={this.state.chosenDate.getDay()} onPress={this.handleDatePicker} />
-                    <Button title="Camera" onPress={() => this.props.navigation.navigate("CameraScreen")} />
+                    <Button title={this.state.chosenDate.getDay()} onPress={this.handleDatePicker} />
+                    <Image style={{width: 400, height: 400}} source={{uri: `data:image/jpg;base64,${this.state.img64}`}} />
+                    <Button title="Camera" onPress={() => this.launchCamera()} />
+                    <Button title="Gallery" onPress={() => this._pickImage()} />
+                    
                     <Button style={{marginTop: 8}} title="Add" onPress={this.handleAdd} />
                 </View>
                 <Overlay
@@ -132,7 +177,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
     },
-    arrowBack: {
+    close: {
         marginTop: 16
     },
     title: {

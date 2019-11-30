@@ -9,6 +9,9 @@ import "firebase/auth";
 import AppNavigator from './navigation/AppNavigator';
 import Login from './screens/Login'
 
+import { YellowBox } from 'react-native';
+YellowBox.ignoreWarnings(['Setting a timer']);
+
 export default class App extends React.Component {
   state = {
     isLoadingComplete: false,
