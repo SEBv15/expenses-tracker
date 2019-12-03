@@ -17,8 +17,8 @@ export default class ExpenseScreen extends Component {
         return (
             <View style={styles.container}>
                 <Ionicons style={styles.close} size={48} name={Platform.OS == "ios"?"ios-close":"md-close"} onPress={()=>this.props.navigation.goBack()} />
-                <Text>{this.props.navigation.state.params.title}</Text>
-                <Text>{'$'+parseFloat(this.props.navigation.state.params.amount).toFixed(2)}</Text>
+                <Text style= {{fontSize: 21,fontFamily: "space-mono",}}> {this.props.navigation.state.params.title}</Text>
+                <Text style= {{fontSize: 21,fontFamily: "space-mono",}}>{'$'+parseFloat(this.props.navigation.state.params.amount).toFixed(2)}</Text>
                 <Text>{this.props.navigation.state.params.category}</Text>
                 <Text>{this.props.navigation.state.params.user}</Text>
                 <Text>{new Date(this.props.navigation.state.params.date).toDateString()}</Text>
@@ -31,5 +31,18 @@ export default class ExpenseScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    }
+    },
+    close: {
+        marginTop: 32,
+        marginLeft: 16,
+    },
+    expenseAmount: {
+        fontSize: 21,
+        fontFamily: "space-mono",
+    },
+    expenseTitle: {
+        fontSize: 20,
+        flex: 1,
+        fontFamily: "Comfortaa",
+    },
 })
