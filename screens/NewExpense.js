@@ -115,14 +115,14 @@ export default class NewExpense extends Component {
         }
     }
     getPermissionAsync = async () => {
-        const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+        /*const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
         if (status !== 'granted') {
             alert('Sorry, we need camera roll permissions to make this work!');
         }
-        status = await Permissions.askAsync(Permissions.CAMERA).status;
-        if (status !== 'granted') {
+        const { cameraStatus } = await Permissions.askAsync(Permissions.CAMERA);
+        if (cameraStatus !== 'granted') {
             alert('Sorry, we need camera permissions too!');
-        }
+        }*/
     }
     handleClose = () => {
         if (this.state.title != "" || this.state.amount != "" || this.state.category != "default") {
