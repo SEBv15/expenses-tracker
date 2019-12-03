@@ -10,6 +10,7 @@ import {
     KeyboardAvoidingView,
     DatePickerAndroid, 
     DatePickerIOS,
+    Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -59,15 +60,26 @@ export default class NewExpense extends Component {
     handleAdd = () => {
         var db = firebase.firestore();
         var expenses = db.collection("expenses")
-        expenses.add({
-            user: firebase.auth().currentUser.uid,
-            title: this.state.title,
-            amount: this.state.amount,
-            date: this.state.chosenDate.getTime(),
-            category: this.state.category,
-            photo: this.state.img64
-          })
-        this.props.navigation.goBack();
+        if (this.state.title != "" && this.state.amount != "" && this.state.category != "default") {
+            expenses.add({
+                user: firebase.auth().currentUser.uid,
+                title: this.state.title,
+                amount: this.state.amount,
+                date: this.state.chosenDate.getTime(),
+                category: this.state.category,
+                photo: this.state.img64
+            })
+            this.props.navigation.goBack();
+        } else {
+            Alert.alert(
+                'Incomplete Dara',
+                'Please input a title and amount and set a category',
+                [
+                  {text: 'OK', onPress: () => console.log('OK Pressed')},
+                ],
+                {cancelable: true},
+              );
+        }
         /*var ref = database.ref('expenses/'+firebase.auth().currentUser.uid.replace("/", ""))
         ref.set({
 
@@ -112,10 +124,29 @@ export default class NewExpense extends Component {
             alert('Sorry, we need camera permissions too!');
         }
     }
+    handleClose = () => {
+        if (this.state.title != "" || this.state.amount != "" || this.state.category != "default") {
+            Alert.alert(
+                'Closing will discard data',
+                '',
+                [
+                  {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                  },
+                  {text: 'OK', onPress: () => this.props.navigation.goBack()},
+                ],
+                {cancelable: false},
+              );
+        } else {
+            this.props.navigation.goBack()
+        }
+    }
     render() {
         return (
             <KeyboardAvoidingView style={styles.outer} behavior="padding" enabled>
-                <Ionicons style={styles.close} size={48} name={Platform.OS == "ios"?"ios-close":"md-close"} onPress={()=>this.props.navigation.goBack()} />
+                <Ionicons style={styles.close} size={48} name={Platform.OS == "ios"?"ios-close":"md-close"} onPress={this.handleClose} />
                 <View style={styles.container}>
                     <Input
                         placeholder={"New Expense"}
@@ -142,7 +173,7 @@ export default class NewExpense extends Component {
                             style={{borderWidth: 1, borderColor: "#ddd", borderRadius: 5, padding: 8, flexDirection: "row", marginRight: 12}}
                             >
                             <Ionicons style={{marginLeft: 8, marginRight: 8}} size={22} name={Platform.OS == "ios"?"ios-calendar":"md-calendar"} />
-                            <Text style={{fontSize: 16, fontWeight: "bold", paddingRight: 4}}>{this.state.chosenDate.getMonth()}/{this.state.chosenDate.getDate()}/{this.state.chosenDate.getFullYear()} </Text>
+                            <Text style={{fontSize: 14, fontFamily: "Comfortaa-Bold", paddingRight: 4}}>{this.state.chosenDate.getMonth()}/{this.state.chosenDate.getDate()}/{this.state.chosenDate.getFullYear()}</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -156,9 +187,11 @@ export default class NewExpense extends Component {
                             {label: "Supplies", value: 'supplies'},
                             {label: "Miscellaneous", value: 'miscellaneous'},
                         ]} />
-                    <Image style={{width: 200, height: 200}} source={{uri: `data:image/jpg;base64,${this.state.img64}`}} />
-                    <Button title="Camera" onPress={() => this.launchCamera()} />
-                    <Button title="Gallery" onPress={() => this._pickImage()} />
+                    {/*<Image style={{width: 200, height: 200}} source={{uri: `data:image/jpg;base64,${this.state.img64}`}} />*/}
+                    <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
+                        <Button buttonStyle={[styles.imgBtn]} type="outline" title="Camera" onPress={() => this.launchCamera()} />
+                        <Button buttonStyle={[styles.imgBtn]} type="outline" title="Gallery" onPress={() => this._pickImage()} />
+                    </View>
                     
                     <Button style={{marginTop: 8}} title="Add" onPress={this.handleAdd} />
                 </View>
@@ -206,5 +239,12 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         justifyContent: "center"
+    },
+    imgBtn: {
+        borderRadius: 40,
+        borderWidth: 3,
+        marginTop: 12,
+        marginHorizontal: 4,
+        paddingHorizontal: 8,
     }
 })
