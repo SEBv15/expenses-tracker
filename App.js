@@ -49,6 +49,12 @@ async function loadResourcesAsync() {
       // We include SpaceMono because we use it in HomeScreen.js. Feel free to
       // remove this if you are not using it in your app
       'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
+      
+      'Comfortaa': require('./assets/fonts/Comfortaa-Regular.ttf'),
+      'Comfortaa-Light': require('./assets/fonts/Comfortaa-Light.ttf'),
+      'Comfortaa-Medium': require('./assets/fonts/Comfortaa-Medium.ttf'),
+      'Comfortaa-SemiBold': require('./assets/fonts/Comfortaa-SemiBold.ttf'),
+      'Comfortaa-Bold': require('./assets/fonts/Comfortaa-Bold.ttf'),
     }),
   ]);
 }

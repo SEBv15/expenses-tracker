@@ -11,6 +11,7 @@ import {
   } from 'react-native';
 
 import { Input, Button } from 'react-native-elements'
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default class AuthDecision extends Component {
     handleLogin = () => {
@@ -22,18 +23,29 @@ export default class AuthDecision extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>Expense Tracker</Text>
-                <Button
-                    title={"Login"}
-                    onPress={this.handleLogin}
-                    containerStyle={styles.loginButton}
-                    />
-                <Button
-                    title={"Sign Up"}
-                    type="outline"
-                    onPress={this.handleSignUp}
-                    containerStyle={styles.signUpButton}
-                    />
+                <LinearGradient
+                    colors={['#833ab4', '#fd1d1d', '#fcb045']}
+                    start={[0,0]}
+                    end={[1,1]}
+                    style={styles.gradient}>
+                    <Text style={styles.title}>Expense Tracker</Text>
+                    <Button
+                        title={"Login"}
+                        onPress={this.handleLogin}
+                        type="outline"
+                        containerStyle={styles.loginButton}
+                        buttonStyle={styles.buttonStyle}
+                        titleStyle={{color: "#000",}}
+                        />
+                    <Button
+                        title={"Sign Up"}
+                        type="outline"
+                        titleStyle={{color: "#000",}}
+                        onPress={this.handleSignUp}
+                        containerStyle={styles.signUpButton}
+                        buttonStyle={styles.buttonStyle}
+                        />
+                </LinearGradient>
             </View>
         )
     }
@@ -41,11 +53,24 @@ export default class AuthDecision extends Component {
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1
+    },
+    gradient: {
+        padding: 15, 
         justifyContent: "center",
-        flex: 1,
+        flex: 1
     },
     title: {
         fontSize: 36,
-        fontWeight: "bold"
+        fontFamily: "Comfortaa-Bold",
+        textAlign: "center",
+        marginBottom: 24
+    },
+    buttonStyle: {
+        borderRadius: 40,
+        borderWidth: 3,
+        borderColor: "#000",
+        marginTop: 12,
+        marginHorizontal: 36
     }
 })
