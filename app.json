@@ -24,7 +24,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cs125.expensestracker"
+    },
+    "android": {
+      "package": "com.cs125.expensestracker"
     },
     "extra": {
       "firebase": {

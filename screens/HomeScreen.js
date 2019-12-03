@@ -20,20 +20,35 @@ import * as firebase from 'firebase';
 import 'firebase/firestore';
 
 function CategoryIcon({category}) {
-  switch(category) {
-    case "groceries":
-      return <MaterialIcons size={24} style={styles.categoryIcon} name="local-grocery-store" />
-    case "clothes":
-      return <Ionicons size={24} style={styles.categoryIcon} name={(Platform.OS == 'ios')?"ios-shirt":"md-shirt"} />
-    case "transportation":
-      return <Ionicons size={24} style={styles.categoryIcon} name={(Platform.OS == 'ios')?"ios-bus":"md-bus"} />
-    case "supplies":
-      return <Ionicons size={24} style={styles.categoryIcon} name={(Platform.OS == 'ios')?"ios-flower":"md-flower"} />
-    case "miscellaneous":
-      return <FontAwesome size={24} style={styles.categoryIcon} name="question-circle-o" />
-    default:
-      return <View style={styles.categoryIcon} />
+  var colors = {
+    groceries: "#264653",
+    clothes: "#2a9d8f",
+    transportation: "#e9c46a",
+    supplies: "#f4a261",
+    miscellaneous: "#e76f51",
+    default: "white"
   }
+  function getIcon(category) {
+    switch(category) {
+      case "groceries":
+        return <MaterialIcons size={24} style={styles.categoryIcon} name="local-grocery-store" />
+      case "clothes":
+        return <Ionicons size={24} style={styles.categoryIcon} name={(Platform.OS == 'ios')?"ios-shirt":"md-shirt"} />
+      case "transportation":
+        return <Ionicons size={24} style={styles.categoryIcon} name={(Platform.OS == 'ios')?"ios-bus":"md-bus"} />
+      case "supplies":
+        return <Ionicons size={24} style={styles.categoryIcon} name={(Platform.OS == 'ios')?"ios-flower":"md-flower"} />
+      case "miscellaneous":
+        return <FontAwesome size={24} style={styles.categoryIcon} name="question-circle-o" />
+      default:
+        return null
+    }
+  }
+  return (
+    <View style={[styles.categoryIconContainer, {backgroundColor: colors[category?category:"default"]}]}>
+      {getIcon(category)}
+    </View>
+  )
 }
 
 function Expense({ navigate, ...props }) {
@@ -55,6 +70,19 @@ function DateTitle({date}) {
       <Text style={styles.date}>{date}</Text>
     </View>
   )
+}
+
+function dateToString(date) {
+  var now = new Date()
+  var yest = new Date(now.getTime() - (1000 * 3600 * 24))
+  date = new Date(date)
+  if (date.getYear() == now.getYear() && date.getMonth() == now.getMonth() && date.getDate() == now.getDate()) {
+    return "Today"
+  } else if (date.getYear() == yest.getYear() && date.getMonth() == yest.getMonth() && date.getDate() == yest.getDate()) {
+    return "Yesterday"
+  } else {
+    return date.toDateString()
+  }
 }
 
 export default class HomeScreen extends React.Component {
@@ -86,7 +114,7 @@ export default class HomeScreen extends React.Component {
       if (lastDate === null || lastDate != date) {
         lastDate = date
         this.expenses.push({
-          title: date,
+          title: dateToString(doc.get("date")),
           data: []
         })
       }
@@ -155,7 +183,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 48,
-    textAlign: "center"
+    textAlign: "center",
+    fontFamily: "Comfortaa"
   },
   dateView: {
     backgroundColor: "#fafafa",
@@ -173,15 +202,25 @@ const styles = StyleSheet.create({
   expenseTitle: {
     fontSize: 20,
     flex: 1,
+    fontFamily: "Comfortaa",
   },
   expenseAmount: {
-    fontSize: 20,
+    fontSize: 21,
     fontFamily: "monospace",
   },
-  categoryIcon: {
+  categoryIconContainer: {
     marginRight: 24,
     marginLeft: 12,
     marginTop: 2,
-    width: 20
+    width: 28,
+    backgroundColor: "red",
+    borderRadius: 20,
+    height: 28,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  categoryIcon: {
+    opacity: .7,
+    color: "#fff",
   }
 });

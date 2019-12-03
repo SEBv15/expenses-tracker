@@ -77,21 +77,21 @@ export default class Login extends Component {
                 <Text style={styles.title}>{this.props.navigation.getParam('isActuallySignUp', false)?"Sign Up":"Login"}</Text>
                 <Text style={styles.error}>{this.state.error}</Text>
                 <Input
-                    placeholder='Your Beatiful Email'
-                    label="Email"
+                    placeholder='Email'
                     autoCapitalize="none"
                     keyboardType="email-address"
                     value={this.state.email}
                     onChangeText={value => this.setState({email: value})}
                     errorStyle={{ color: 'red' }}
+                    containerStyle={styles.input}
                     editable={!this.state.isSubmitting}
                     />
                 <Input
-                    placeholder={"Super Secret Password"}
-                    label="Password"
+                    placeholder={"Password"}
                     secureTextEntry
                     autoCapitalize="none"
                     value={this.state.password}
+                    containerStyle={styles.input}
                     onChangeText={value => this.setState({password: value})}
                     editable={!this.state.isSubmitting}
                     />
@@ -108,7 +108,7 @@ export default class Login extends Component {
                     <Button
                         title={this.props.navigation.getParam('isActuallySignUp', false)?"Sign Up":"Login"}
                         onPress={this.handleSubmit}
-                        containerStyle={styles.submitButton}
+                        buttonStyle={styles.submitButton}
                         disabled={this.state.isSubmitting}
                         loading={this.state.isSubmitting}
                         loadingProps={{ size: "large", color: "white" }}
@@ -122,33 +122,31 @@ export default class Login extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        //alignItems: "center",
         justifyContent: "center",
-        marginRight: 12,
-        marginLeft: 12,
+        marginHorizontal: 36,
     },
     title: {
         fontSize: 36,
-        fontWeight: "bold",
         marginBottom: 24,
         textAlign: "center",
+        fontFamily: "Comfortaa-Bold",
     },
     error: {
         color: "red",
         textAlign: "center",
     },
     input: {
-        flex:1,
-        justifyContent:"center",
-        backgroundColor:"#fff",
-        alignItems:"stretch"
+        marginVertical: 8,
     },
     buttons: {
         flexDirection: "row",
         marginBottom: 24,
+        marginTop: 12,
         justifyContent: "space-between"
     },
     submitButton: {
+        borderRadius: 40,
+        paddingHorizontal: 16,
     },
     cancelButton: {
     }

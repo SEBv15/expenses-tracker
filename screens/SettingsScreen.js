@@ -7,10 +7,10 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  Button,
   View,
 } from 'react-native';
 import * as firebase from 'firebase';
+import { Button } from 'react-native-elements'
 
 export default class SettingsScreen extends React.Component {
   logout = () => {
@@ -21,8 +21,8 @@ export default class SettingsScreen extends React.Component {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Settings</Text>
-        <Text>{firebase.auth().currentUser.email}</Text>
-        <Button style={styles.logout} title="Logout" onPress={this.logout} />
+        <Text style={styles.email}>{firebase.auth().currentUser.email}</Text>
+        <Button type="outline" titleStyle={{color: "black"}} buttonStyle={styles.logout} title="Logout" onPress={this.logout} />
       </View>
     )
   }
@@ -35,6 +35,17 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 48,
+    textAlign: "center",
+    fontFamily: "Comfortaa-Bold"
+  },
+  email: {
     textAlign: "center"
+  },
+  logout: {
+    borderRadius: 40,
+    borderWidth: 3,
+    borderColor: "#000",
+    marginTop: 12,
+    marginHorizontal: 64
   }
 })

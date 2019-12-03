@@ -10,9 +10,10 @@ import {
     KeyboardAvoidingView,
     DatePickerAndroid, 
     DatePickerIOS,
-    Permissions
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+import * as Permissions from 'expo-permissions';
 
 import { Input, Button, Overlay } from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select'
@@ -116,25 +117,38 @@ export default class NewExpense extends Component {
             <KeyboardAvoidingView style={styles.outer} behavior="padding" enabled>
                 <Ionicons style={styles.close} size={48} name={Platform.OS == "ios"?"ios-close":"md-close"} onPress={()=>this.props.navigation.goBack()} />
                 <View style={styles.container}>
-                    <Text style={styles.title}>New Expense</Text>
-                    <Text>{JSON.stringify(this.state.chosenDate)}</Text>
                     <Input
-                        placeholder={"Title"}
+                        placeholder={"New Expense"}
                         value={this.state.title}
                         onChangeText={value => this.setState({title: value})}
                         editable={!this.state.isSubmitting}
+                        containerStyle={{marginTop: 12}}
                         />
-                    <Input
-                        placeholder='Amount'
-                        keyboardType="numeric"
-                        value={this.state.amount}
-                        onChangeText={value => this.setState({amount: value})}
-                        errorStyle={{ color: 'red' }}
-                        editable={!this.state.isSubmitting}
-                        />
+                    <View style={{flexDirection: "row", justifyContent: "space-between", marginVertical: 16}}>
+                        <Input
+                            placeholder='0.00'
+                            keyboardType="numeric"
+                            value={this.state.amount}
+                            onChangeText={value => this.setState({amount: value})}
+                            errorStyle={{ color: 'red' }}
+                            editable={!this.state.isSubmitting}
+                            leftIcon={<Text style={{fontSize: 24, marginRight: 2, color: "#444"}}>$</Text>}
+                            inputStyle={{marginLeft: 0}}
+                            inputContainerStyle={{borderBottomWidth: 0, marginLeft: 0, paddingLeft: 0}}
+                            containerStyle={{flex: 1}}
+                            />
+                        <TouchableOpacity
+                            onPress={this.handleDatePicker}
+                            style={{borderWidth: 1, borderColor: "#ddd", borderRadius: 5, padding: 8, flexDirection: "row", marginRight: 12}}
+                            >
+                            <Ionicons style={{marginLeft: 8, marginRight: 8}} size={22} name={Platform.OS == "ios"?"ios-calendar":"md-calendar"} />
+                            <Text style={{fontSize: 16, fontWeight: "bold"}}>{this.state.chosenDate.getMonth()}/{this.state.chosenDate.getDate()}/{this.state.chosenDate.getFullYear()}</Text>
+                        </TouchableOpacity>
+                    </View>
+
                     <RNPickerSelect
                         onValueChange={value=>this.setState({category: value})}
-                        //placeholder={{name:"Select a category...", value: null}}
+                        placeholder={{label:"Select a category...", value: 'default'}}
                         items={[
                             {label: "Groceries", value: 'groceries'},
                             {label: "Clothes", value: 'clothes'},
@@ -142,8 +156,7 @@ export default class NewExpense extends Component {
                             {label: "Supplies", value: 'supplies'},
                             {label: "Miscellaneous", value: 'miscellaneous'},
                         ]} />
-                    <Button title={this.state.chosenDate.getDay()} onPress={this.handleDatePicker} />
-                    <Image style={{width: 400, height: 400}} source={{uri: `data:image/jpg;base64,${this.state.img64}`}} />
+                    <Image style={{width: 200, height: 200}} source={{uri: `data:image/jpg;base64,${this.state.img64}`}} />
                     <Button title="Camera" onPress={() => this.launchCamera()} />
                     <Button title="Gallery" onPress={() => this._pickImage()} />
                     
@@ -176,13 +189,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
+        padding: 8,
     },
     close: {
-        marginTop: 16
+        marginTop: 32,
+        marginLeft: 16,
     },
     title: {
         fontSize: 48,
-        textAlign: "center"
+        textAlign: "center",
+        fontFamily: "Comfortaa-SemiBold"
     },
     iospicker: {
         position: "absolute",
