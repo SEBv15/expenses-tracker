@@ -142,7 +142,7 @@ export default class NewExpense extends Component {
                             style={{borderWidth: 1, borderColor: "#ddd", borderRadius: 5, padding: 8, flexDirection: "row", marginRight: 12}}
                             >
                             <Ionicons style={{marginLeft: 8, marginRight: 8}} size={22} name={Platform.OS == "ios"?"ios-calendar":"md-calendar"} />
-                            <Text style={{fontSize: 16, fontWeight: "bold"}}>{this.state.chosenDate.getMonth()}/{this.state.chosenDate.getDate()}/{this.state.chosenDate.getFullYear()}</Text>
+                            <Text style={{fontSize: 16, fontWeight: "bold", paddingRight: 4}}>{this.state.chosenDate.getMonth()}/{this.state.chosenDate.getDate()}/{this.state.chosenDate.getFullYear()} </Text>
                         </TouchableOpacity>
                     </View>
 

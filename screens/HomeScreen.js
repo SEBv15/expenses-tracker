@@ -58,7 +58,7 @@ function Expense({ navigate, ...props }) {
       onPress={() => navigate("Expense",{...props})}
       background={TouchableNativeFeedbackSafe.SelectableBackground()}>
       <CategoryIcon category={props.category} />
-      <Text style={styles.expenseTitle}>{props.title}</Text>
+      <Text numberOfLines={1} style={styles.expenseTitle}>{props.title}</Text>
       <Text style={styles.expenseAmount}>${parseFloat(props.amount).toFixed(2)}</Text>
     </TouchableNativeFeedbackSafe>
   );
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   },
   expenseAmount: {
     fontSize: 21,
-    fontFamily: "monospace",
+    fontFamily: "space-mono",
   },
   categoryIconContainer: {
     marginRight: 24,
