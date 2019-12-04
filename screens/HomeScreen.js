@@ -97,7 +97,8 @@ function dateToString(date) {
 export default class HomeScreen extends React.Component {
   state = {
     lastExpense: null,
-    loading: false
+    loading: false,
+    refreshing: false
   }
   expenses = [
 
@@ -143,6 +144,11 @@ export default class HomeScreen extends React.Component {
   loadMore = () => {
     this.loadExpenses(this.state.lastExpense)
   }
+  refresh = async () => {
+    this.setState({refreshing: true})
+    await this.loadExpenses()
+    this.setState({refreshing: false})
+  }
   buttonPressHandler = () => {
     this.props.navigation.navigate("NewExpense", {
       callback: this.loadExpenses
@@ -165,6 +171,8 @@ export default class HomeScreen extends React.Component {
           ListFooterComponent={() => <View style={{height: 70}}>{(this.state.loading?<ActivityIndicator color="#000" style={{marginTop: 8}} size="small" />:null)}</View>}
           stickySectionHeadersEnabled={true}
           onEndReached={()=>this.loadMore()}
+          onRefresh={this.refresh}
+          refreshing={this.state.refreshing}
           renderSectionHeader={({ section: { title } }) => (
             <DateTitle date={title} />
           )}
