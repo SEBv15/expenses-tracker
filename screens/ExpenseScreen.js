@@ -12,7 +12,18 @@ import {
 
 import { Ionicons } from '@expo/vector-icons';
 
+import * as firebase from 'firebase';
+import 'firebase/firestore';
+
 export default class ExpenseScreen extends Component {
+    state = {
+        loading: true
+    }
+    async componentDidMount() {
+        var res = await firebase.firestore().collection("photos").doc(this.props.navigation.state.params.photo).get()
+        this.base64 = res.data().base64
+        this.setState({loading: false})
+    }
     render() {
         return (
             <View style={styles.container}>
@@ -22,7 +33,7 @@ export default class ExpenseScreen extends Component {
                 <Text>{this.props.navigation.state.params.category}</Text>
                 <Text>{this.props.navigation.state.params.user}</Text>
                 <Text>{new Date(this.props.navigation.state.params.date).toDateString()}</Text>
-                <Image style={{width: 400, height: 400}} source={{uri: `data:image/jpg;base64,${this.props.navigation.state.params.photo}`}} />
+                <Image style={{width: 400, height: 400}} source={{uri: `data:image/jpg;base64,${this.base64}`}} />
             </View>
         )
     }

@@ -10,6 +10,7 @@ import {
   Button,
   View,
   SectionList,
+  ActivityIndicator,
 } from 'react-native';
 import { NavigationEvents } from 'react-navigation';
 
@@ -18,6 +19,8 @@ import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-fee
 
 import * as firebase from 'firebase';
 import 'firebase/firestore';
+
+import moment from 'moment';
 
 function CategoryIcon({category}) {
   var colors = {
@@ -73,21 +76,28 @@ function DateTitle({date}) {
 }
 
 function dateToString(date) {
-  var now = new Date()
-  var yest = new Date(now.getTime() - (1000 * 3600 * 24))
-  date = new Date(date)
-  if (date.getYear() == now.getYear() && date.getMonth() == now.getMonth() && date.getDate() == now.getDate()) {
+  date = moment(date)
+  var now = moment()
+  if (date.isSame(now, 'd')) {
     return "Today"
-  } else if (date.getYear() == yest.getYear() && date.getMonth() == yest.getMonth() && date.getDate() == yest.getDate()) {
+  } else if (date.isSame(now.clone().subtract(1, 'days'), 'd')) {
     return "Yesterday"
-  } else {
-    return date.toDateString()
   }
+  for (var i = 2; i < 7; i++) {
+    if (date.isSame(now.clone().subtract(i, 'days'), 'd')) {
+      return date.format('dddd')
+    }
+  }
+  if (date.isSame(now, 'y')) {
+    return date.format("MMMM D")
+  }
+  return date.format("MMMM D, Y")
 }
 
 export default class HomeScreen extends React.Component {
   state = {
-    lastExpense: null
+    lastExpense: null,
+    loading: false
   }
   expenses = [
 
@@ -95,24 +105,32 @@ export default class HomeScreen extends React.Component {
   componentDidMount() {
     this.loadExpenses()
   }
-  loadExpenses = async () => {
+  loadExpenses = async (after) => {
+    this.setState({loading: true})
     var ref = firebase
     .firestore()
     .collection("expenses")
     .where("user", "==", firebase.auth().currentUser.uid)
     .orderBy("date", "desc")
 
-    var data = await ref.limit(20).get()
+    if (after) {
+      ref = ref.startAfter(after)
+    }
 
-    this.expenses = []
-    var lastDate = null
+    var data = await ref.limit(5).get()
+
+    if (!after) {
+      this.lastDate = null
+      this.expenses = []
+    }
+
     for (var doc of data.docs) {
       console.log(doc.data())
       var date = new Date(doc.get("date"))
       console.log(date, doc.get("date"))
       date = date.toDateString()
-      if (lastDate === null || lastDate != date) {
-        lastDate = date
+      if (this.lastDate === null || this.lastDate != date) {
+        this.lastDate = date
         this.expenses.push({
           title: dateToString(doc.get("date")),
           data: []
@@ -120,17 +138,22 @@ export default class HomeScreen extends React.Component {
       }
       this.expenses[this.expenses.length - 1].data.push({...doc.data(), ...{firestoreRef: doc.ref}})
     }
-    this.setState({lastExpense: data.docs[data.docs.length - 1]})
+    this.setState({lastExpense: data.docs[data.docs.length - 1], loading: false})
+  }
+  loadMore = () => {
+    this.loadExpenses(this.state.lastExpense)
   }
   buttonPressHandler = () => {
-    this.props.navigation.dangerouslyGetParent().dangerouslyGetParent().navigate("NewExpense")
+    this.props.navigation.navigate("NewExpense", {
+      callback: this.loadExpenses
+    })
   }
   render() {
     return (
       <View style={styles.container}>
         {/*<Text style={styles.title}>Expenses</Text>*/}
         <NavigationEvents
-          onWillFocus={payload => this.loadExpenses()}
+         // onWillFocus={payload => this.loadExpenses()}
         />
         <View style={{height: (Platform.OS == 'ios'?18:24)}} />
         <SectionList
@@ -139,8 +162,9 @@ export default class HomeScreen extends React.Component {
           keyExtractor={(item, index) => item.date + index}
           renderItem={({ item }) => <Expense {...item} navigate={this.props.navigation.navigate} />}
           ItemSeparatorComponent={() => <View style={{height: 1, backgroundColor: "#eee", marginHorizontal: 12}} />}
-          ListFooterComponent={() => <View style={{height: 70}} />}
+          ListFooterComponent={() => <View style={{height: 70}}>{(this.state.loading?<ActivityIndicator color="#000" style={{marginTop: 8}} size="small" />:null)}</View>}
           stickySectionHeadersEnabled={true}
+          onEndReached={()=>this.loadMore()}
           renderSectionHeader={({ section: { title } }) => (
             <DateTitle date={title} />
           )}

@@ -30,7 +30,8 @@ export default class NewExpense extends Component {
         openDatePicker: false,
         category: "",
         amount: "",
-        img64: ""
+        img64: "",
+        saving: false
     }
     componentDidMount() {
         this.getPermissionAsync()
@@ -58,18 +59,28 @@ export default class NewExpense extends Component {
         this.setState({chosenDate: date})
     }
     handleAdd = () => {
+        if (this.state.saving) {
+            return
+        }
         var db = firebase.firestore();
         var expenses = db.collection("expenses")
         if (this.state.title != "" && this.state.amount != "" && this.state.category != "default") {
-            expenses.add({
-                user: firebase.auth().currentUser.uid,
-                title: this.state.title,
-                amount: this.state.amount,
-                date: this.state.chosenDate.getTime(),
-                category: this.state.category,
-                photo: this.state.img64
+            this.setState({saving: true})
+            db.collection("photos").add({
+                base64: this.state.img64
+            }).then((ref) => {
+                expenses.add({
+                    user: firebase.auth().currentUser.uid,
+                    title: this.state.title,
+                    amount: this.state.amount,
+                    date: this.state.chosenDate.getTime(),
+                    category: this.state.category,
+                    photo: ref.id
+                }).then(() => {
+                    this.props.navigation.state.params.callback()
+                    this.props.navigation.goBack();
+                })
             })
-            this.props.navigation.goBack();
         } else {
             Alert.alert(
                 'Incomplete Dara',
@@ -193,7 +204,7 @@ export default class NewExpense extends Component {
                         <Button buttonStyle={[styles.imgBtn]} type="outline" title="Gallery" onPress={() => this._pickImage()} />
                     </View>
                     
-                    <Button style={{marginTop: 8}} title="Add" onPress={this.handleAdd} />
+                    <Button style={{marginTop: 8}} title="Add" onPress={this.handleAdd} loading={this.state.saving} />
                 </View>
                 <Overlay
                     isVisible={this.state.openDatePicker}
