@@ -162,7 +162,7 @@ class AverageExpensesChart extends React.Component {
             <View style={{backgroundColor: this.state.color[this.props.view], paddingVertical: 8}}>
                 <Text style={{fontSize: 24, color: "white", fontFamily: "Comfortaa-SemiBold", marginHorizontal: 16, marginTop: 16, marginBottom: 0}}>This {this.props.view == "week"?"Week":"Month"}</Text>
                 {this.state.loading?(
-                <ActivityIndicator style={{height: 220 + 24 + 16, marginVertical: 8}} size="large" />
+                <ActivityIndicator color="#fff" style={{height: 220 + 24 + 16, marginVertical: 8}} size="large" />
                 ):(
                 <React.Fragment>
                     <Text style={{
@@ -262,7 +262,7 @@ class ExpenseDistribution extends React.Component {
             <View style={{backgroundColor: this.state.color}}>
                 <Text style={{fontSize: 24, color: "white", fontFamily: "Comfortaa-SemiBold", marginHorizontal: 16, marginVertical: 16}}>Makeup</Text>
                 {this.state.loading?(
-                <ActivityIndicator size="large" style={{height: 220}} />
+                <ActivityIndicator size="large" color="#fff" style={{height: 220}} />
                 ):(
                 <PieChart
                     data={this.data}
@@ -338,9 +338,9 @@ export default class DataScreen extends React.Component {
     }
     render() {
         return (
-            <View style={{flex: 1}}>
+            <View style={{flex: 1, backgroundColor: "#05668d"}}>
                 <View style={styles.legend}>
-                    <Text style={styles.legendItem}>Total</Text>
+                    <Text style={[styles.legendItem, {backgroundColor: "white"}]}>Total</Text>
                     {Object.keys(colors).map((c) => (<Text style={[styles.legendItem, {backgroundColor: colors[c]}]} key={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</Text>))}
                 </View>
                 <ScrollView style={styles.container} contentContainerStyle={{}} refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.refresh} />}>
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     legend: {
         flexDirection: "row",
         borderBottomWidth: 1,
-        borderBottomColor: "#ddd",
+        borderBottomColor: "#777",
     },
     legendItem: {
         flex: 1,
