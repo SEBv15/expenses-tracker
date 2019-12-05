@@ -11,6 +11,7 @@ import {
   View,
   Dimensions,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 
 import {
@@ -68,13 +69,17 @@ class AverageExpensesChart extends React.Component {
         color: {
             "week": "#05668d",
             "month": "#37718e"
-        }
+        },
+        loading: true,
     }
     async componentDidMount() {
         this.getData(this.props.view)
         this.props.addRefreshHandler(() => this.getData(this.props.view))
     }
+    line = {};
     getData = async (range = "week") => {
+        this.setState({loading: true})
+
         var res = await firebase
         .firestore()
         .collection("expenses")
@@ -105,6 +110,7 @@ class AverageExpensesChart extends React.Component {
         }
 
         //console.log("DOCS", res.docs)
+        var total = 0;
 
         if (range == "week") {
             for (var i = 6; i >= 0; i--) {
@@ -120,13 +126,14 @@ class AverageExpensesChart extends React.Component {
                 for (var doc of res.docs) {
                     if (moment(doc.data().date).isSame(moment().subtract(6 - i, 'days'), 'd')) {
                         this.line.datasets[0].data[i] += parseFloat(doc.data().amount)
+                        total += this.line.datasets[0].data[i]
                         if (categoryToNum(doc.data().category) != -1)
                             this.line.datasets[categoryToNum(doc.data().category) + 1].data[i] += parseFloat(doc.data().amount)
                     }
                 }
             }
         } else if (range == "month") {
-            for (var i = 30; i >= 0; i--) {
+            for (var i = 29; i >= 0; i--) {
                 if (i % 6 == 3)
                     this.line.labels.push(moment().subtract(i, 'days').format("MM/DD"))
                 else 
@@ -137,8 +144,9 @@ class AverageExpensesChart extends React.Component {
                 }
 
                 for (var doc of res.docs) {
-                    if (moment(doc.data().date).isSame(moment().subtract(30 - i, 'days'), 'd')) {
+                    if (moment(doc.data().date).isSame(moment().subtract(29 - i, 'days'), 'd')) {
                         this.line.datasets[0].data[i] += parseFloat(doc.data().amount)
+                        total += this.line.datasets[0].data[i]
                         if (categoryToNum(doc.data().category) != -1)
                             this.line.datasets[categoryToNum(doc.data().category) + 1].data[i] += parseFloat(doc.data().amount)
                     }
@@ -146,122 +154,50 @@ class AverageExpensesChart extends React.Component {
             }
         }
         console.log(this.line)
-        this.setState({loading: false})
-    }
-    line = {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-        datasets: [
-          {
-            data: [20, 45, 28, 80, 99, 43],
-            strokeWidth: 2, // optional
-            label: "asdaa"
-          },
-          {
-              data: [29,53,121,23,23,23],
-              color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`
-          }
-        ],
-      };
-    getData = async (range = "week") => {
-        var res = await firebase
-        .firestore()
-        .collection("expenses")
-        .where("user", "==", firebase.auth().currentUser.uid)
-        .orderBy("date", "desc")
-        .endAt(Date.now() - 1000*60*60*24*(range == "week"?7:31))
-        .get()
-
-        this.line = {
-            labels: [],
-            datasets: [
-                {
-                    data: [],
-                    strokeWidth: 2,
-                    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`
-                }
-            ]
-        }
-
-        for (let category of Object.keys(colors)) {
-            let rgb = hexToRgb(colors[category])
-            console.log(rgb)
-            this.line.datasets[categoryToNum(category) + 1] = {
-                data: [],
-                strokeWidth: 2,
-                color: (opacity = 1) => `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`
-            }
-        }
-
-        //console.log("DOCS", res.docs)
-
-        if (range == "week") {
-            for (var i = 6; i >= 0; i--) {
-                if (i != 0)
-                    this.line.labels.push(moment().clone().subtract(i, 'days').format("ddd"))
-                else
-                    this.line.labels.push("Today");
-
-                for (var j = 0; j <= 5; j++) {
-                    this.line.datasets[j].data[i] = 0
-                }
-
-                for (var doc of res.docs) {
-                    if (moment(doc.data().date).isSame(moment().subtract(6 - i, 'days'), 'd')) {
-                        this.line.datasets[0].data[i] += parseFloat(doc.data().amount)
-                        if (categoryToNum(doc.data().category) != -1)
-                            this.line.datasets[categoryToNum(doc.data().category) + 1].data[i] += parseFloat(doc.data().amount)
-                    }
-                }
-            }
-        } else if (range == "month") {
-            for (var i = 30; i >= 0; i--) {
-                if (i % 6 == 3)
-                    this.line.labels.push(moment().subtract(i, 'days').format("MM/DD"))
-                else 
-                    this.line.labels.push("")
-
-                for (var j = 0; j <= 5; j++) {
-                    this.line.datasets[j].data[i] = 0
-                }
-
-                for (var doc of res.docs) {
-                    if (moment(doc.data().date).isSame(moment().subtract(30 - i, 'days'), 'd')) {
-                        this.line.datasets[0].data[i] += parseFloat(doc.data().amount)
-                        if (categoryToNum(doc.data().category) != -1)
-                            this.line.datasets[categoryToNum(doc.data().category) + 1].data[i] += parseFloat(doc.data().amount)
-                    }
-                }
-            }
-        }
-        console.log(this.line)
-        this.setState({loading: false})
+        this.setState({loading: false, avg: total / ((range == "week")?7:30)})
     }
     render() {
         return (
             <View style={{backgroundColor: this.state.color[this.props.view], paddingVertical: 8}}>
-                <Text style={{fontSize: 24, color: "white", fontFamily: "Comfortaa-SemiBold", marginHorizontal: 16, marginVertical: 16}}>This {this.props.view == "week"?"Week":"Month"}</Text>
-                <LineChart
-                    data={this.line}
-                    width={Dimensions.get('window').width} // from react-native
-                    height={220}
-                    yAxisLabel={'$'}
-                    chartConfig={{
-                        backgroundColor: this.state.color[this.props.view],
-                        backgroundGradientFrom: this.state.color[this.props.view],
-                        backgroundGradientTo: this.state.color[this.props.view],
-                        decimalPlaces: 2, // optional, defaults to 2dp
-                        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                        style: {
-                            borderRadius: 16
-                        }
-                    }}
-                    bezier
-                    style={{
-                        marginVertical: 8,
-                        borderRadius: 16,
-                        marginRight: 0
-                    }}
-                />
+                <Text style={{fontSize: 24, color: "white", fontFamily: "Comfortaa-SemiBold", marginHorizontal: 16, marginTop: 16, marginBottom: 0}}>This {this.props.view == "week"?"Week":"Month"}</Text>
+                {this.state.loading?(
+                <ActivityIndicator style={{height: 220 + 24 + 16, marginVertical: 8}} size="large" />
+                ):(
+                <React.Fragment>
+                    <Text style={{
+                        fontFamily: "Comfortaa",
+                        fontSize: 16,
+                        color: "white",
+                        opacity: 0.7,
+                        marginHorizontal: 16,
+                        marginBottom: 16,
+                        marginTop: 0,
+                        height: 24,
+                    }}>Daily Avg: <Text style={{fontFamily: "space-mono"}}>${this.state.avg.toFixed(2)}</Text></Text>
+                    <LineChart
+                        data={this.line}
+                        width={Dimensions.get('window').width} // from react-native
+                        height={220}
+                        yAxisLabel={'$'}
+                        chartConfig={{
+                            backgroundColor: this.state.color[this.props.view],
+                            backgroundGradientFrom: this.state.color[this.props.view],
+                            backgroundGradientTo: this.state.color[this.props.view],
+                            decimalPlaces: 2, // optional, defaults to 2dp
+                            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                            style: {
+                                borderRadius: 16
+                            }
+                        }}
+                        bezier
+                        style={{
+                            marginVertical: 8,
+                            borderRadius: 16,
+                            marginRight: 0
+                        }}
+                    />
+                </React.Fragment>
+                )}
             </View>
         )
     }
@@ -269,7 +205,8 @@ class AverageExpensesChart extends React.Component {
 
 class ExpenseDistribution extends React.Component {
     state = {
-        color: "#18314f"
+        color: "#18314f",
+        loading: true,
     }
     data = [
       ];
@@ -278,6 +215,8 @@ class ExpenseDistribution extends React.Component {
         this.props.addRefreshHandler(() => this.getData())
     }
     getData = async () => {
+        this.setState({loading: true})
+
         var res = await firebase
         .firestore()
         .collection("expenses")
@@ -314,6 +253,9 @@ class ExpenseDistribution extends React.Component {
         return (
             <View style={{backgroundColor: this.state.color}}>
                 <Text style={{fontSize: 24, color: "white", fontFamily: "Comfortaa-SemiBold", marginHorizontal: 16, marginVertical: 16}}>Makeup</Text>
+                {this.state.loading?(
+                <ActivityIndicator size="large" style={{height: 220}} />
+                ):(
                 <PieChart
                     data={this.data}
                     width={Dimensions.get("window").width}
@@ -339,6 +281,7 @@ class ExpenseDistribution extends React.Component {
                     paddingLeft="15"
                     absolute
                     />
+                )}
             </View>
         )
     }
