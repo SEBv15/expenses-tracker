@@ -83,7 +83,7 @@ export default class NewExpense extends Component {
             })
         } else {
             Alert.alert(
-                'Incomplete Dara',
+                'Incomplete Data',
                 'Please input a title and amount and set a category',
                 [
                   {text: 'OK', onPress: () => console.log('OK Pressed')},

@@ -97,7 +97,8 @@ function dateToString(date) {
 export default class HomeScreen extends React.Component {
   state = {
     lastExpense: null,
-    loading: false
+    loading: false,
+    refreshing: false
   }
   expenses = [
 
@@ -125,9 +126,9 @@ export default class HomeScreen extends React.Component {
     }
 
     for (var doc of data.docs) {
-      console.log(doc.data())
+      //console.log(doc.data())
       var date = new Date(doc.get("date"))
-      console.log(date, doc.get("date"))
+      //console.log(date, doc.get("date"))
       date = date.toDateString()
       if (this.lastDate === null || this.lastDate != date) {
         this.lastDate = date
@@ -142,6 +143,11 @@ export default class HomeScreen extends React.Component {
   }
   loadMore = () => {
     this.loadExpenses(this.state.lastExpense)
+  }
+  refresh = async () => {
+    this.setState({refreshing: true})
+    await this.loadExpenses()
+    this.setState({refreshing: false})
   }
   buttonPressHandler = () => {
     this.props.navigation.navigate("NewExpense", {
@@ -165,6 +171,8 @@ export default class HomeScreen extends React.Component {
           ListFooterComponent={() => <View style={{height: 70}}>{(this.state.loading?<ActivityIndicator color="#000" style={{marginTop: 8}} size="small" />:null)}</View>}
           stickySectionHeadersEnabled={true}
           onEndReached={()=>this.loadMore()}
+          onRefresh={this.refresh}
+          refreshing={this.state.refreshing}
           renderSectionHeader={({ section: { title } }) => (
             <DateTitle date={title} />
           )}
