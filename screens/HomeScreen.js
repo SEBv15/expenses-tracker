@@ -126,9 +126,9 @@ export default class HomeScreen extends React.Component {
     }
 
     for (var doc of data.docs) {
-      console.log(doc.data())
+      //console.log(doc.data())
       var date = new Date(doc.get("date"))
-      console.log(date, doc.get("date"))
+      //console.log(date, doc.get("date"))
       date = date.toDateString()
       if (this.lastDate === null || this.lastDate != date) {
         this.lastDate = date
