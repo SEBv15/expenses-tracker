@@ -209,6 +209,7 @@ class ExpenseDistribution extends React.Component {
         color: "#18314f",
         loading: true,
         range: 0,
+        total: 0,
     }
     data = [
       ];
@@ -245,13 +246,15 @@ class ExpenseDistribution extends React.Component {
         }
 
         //console.log("DOCS", res.docs)
+        var total = 0;
 
         for (let doc of res.docs) {
             if (categoryToNum(doc.data().category) >= 0)
                 this.data[categoryToNum(doc.data().category)].amount += parseFloat(doc.data().amount)
+            total += parseFloat(doc.data().amount)
         }
         console.log(this.data)
-        this.setState({loading: false})
+        this.setState({loading: false, total: total})
     }
     updateRange = (r) => {
         this.setState({range: r})
@@ -260,35 +263,47 @@ class ExpenseDistribution extends React.Component {
     render() {
         return (
             <View style={{backgroundColor: this.state.color}}>
-                <Text style={{fontSize: 24, color: "white", fontFamily: "Comfortaa-SemiBold", marginHorizontal: 16, marginVertical: 16}}>Makeup</Text>
+                <Text style={{fontSize: 24, color: "white", fontFamily: "Comfortaa-SemiBold", marginHorizontal: 16, marginTop: 16}}>Makeup</Text>
                 {this.state.loading?(
-                <ActivityIndicator size="large" color="#fff" style={{height: 220}} />
+                <ActivityIndicator size="large" color="#fff" style={{height: 220 + 24 + 16}} />
                 ):(
-                <PieChart
-                    data={this.data}
-                    width={Dimensions.get("window").width}
-                    height={220}
-                    chartConfig={{
-                        backgroundColor: "#e26a00",
-                        backgroundGradientFrom: "#fb8c00",
-                        backgroundGradientTo: "#ffa726",
-                        decimalPlaces: 2, // optional, defaults to 2dp
-                        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                        style: {
-                          borderRadius: 16
-                        },
-                        propsForDots: {
-                          r: "6",
-                          strokeWidth: "2",
-                          stroke: "#ffa726"
-                        }
-                      }}
-                    accessor="amount"
-                    backgroundColor="transparent"
-                    paddingLeft="15"
-                    absolute
-                    />
+                <React.Fragment>
+                    <Text style={{
+                        fontFamily: "Comfortaa",
+                        fontSize: 16,
+                        color: "white",
+                        opacity: 0.7,
+                        marginHorizontal: 16,
+                        marginBottom: 16,
+                        marginTop: 0,
+                        height: 24,
+                    }}>Total: <Text style={{fontFamily: "space-mono"}}>${this.state.total.toFixed(2)}</Text></Text>
+                    <PieChart
+                        data={this.data}
+                        width={Dimensions.get("window").width}
+                        height={220}
+                        chartConfig={{
+                            backgroundColor: "#e26a00",
+                            backgroundGradientFrom: "#fb8c00",
+                            backgroundGradientTo: "#ffa726",
+                            decimalPlaces: 2, // optional, defaults to 2dp
+                            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                            style: {
+                            borderRadius: 16
+                            },
+                            propsForDots: {
+                            r: "6",
+                            strokeWidth: "2",
+                            stroke: "#ffa726"
+                            }
+                        }}
+                        accessor="amount"
+                        backgroundColor="transparent"
+                        paddingLeft="15"
+                        />
+                    </React.Fragment>
+
                 )}
                 <ButtonGroup
                     onPress={this.updateRange}
