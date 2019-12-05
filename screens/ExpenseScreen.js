@@ -42,7 +42,7 @@ export default class ExpenseScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#F5F5F5"
+        backgroundColor: "#ADD8E6"
 
     },
     close: {
