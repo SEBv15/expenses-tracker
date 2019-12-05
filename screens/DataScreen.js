@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  Button,
   View,
   Dimensions,
   RefreshControl,
@@ -22,6 +21,8 @@ import {
     ContributionGraph,
     StackedBarChart
 } from 'react-native-chart-kit'
+
+import { Input, Button, Overlay, ButtonGroup } from 'react-native-elements'
 
 import * as firebase from 'firebase';
 import 'firebase/firestore';
@@ -207,14 +208,16 @@ class ExpenseDistribution extends React.Component {
     state = {
         color: "#18314f",
         loading: true,
+        range: 0,
     }
     data = [
       ];
+    buttons = ["Week", "Month", "All"]
     componentDidMount() {
         this.getData()
         this.props.addRefreshHandler(() => this.getData())
     }
-    getData = async () => {
+    getData = async (range) => {
         this.setState({loading: true})
 
         var res = await firebase
@@ -222,6 +225,7 @@ class ExpenseDistribution extends React.Component {
         .collection("expenses")
         .where("user", "==", firebase.auth().currentUser.uid)
         .orderBy("date", "desc")
+        .endBefore(range == 2?0:(moment().subtract((range?30:7), 'days').valueOf()))
         .get()
 
         this.data = []
@@ -248,6 +252,10 @@ class ExpenseDistribution extends React.Component {
         }
         console.log(this.data)
         this.setState({loading: false})
+    }
+    updateRange = (r) => {
+        this.setState({range: r})
+        this.getData(r);
     }
     render() {
         return (
@@ -282,6 +290,32 @@ class ExpenseDistribution extends React.Component {
                     absolute
                     />
                 )}
+                <ButtonGroup
+                    onPress={this.updateRange}
+                    selectedIndex={this.state.range}
+                    buttons={this.buttons}
+                    containerStyle={{
+                        height: 36,
+                        borderWidth: 0, 
+                        backgroundColor: "transparent",
+                        marginBottom: 24
+                    }}
+                    buttonStyle={{
+                        backgroundColor: "rgba(255,255,255,0.3)",
+                    }}
+                    selectedButtonStyle={{
+                        backgroundColor: "white"
+                    }}
+                    textStyle={{
+                        color: "white"
+                    }}
+                    innerBorderStyle={{
+                        color: "rgba(255,255,255,0.4)"
+                    }}
+                    selectedTextStyle={{
+                        color: this.state.color
+                    }}
+                    />
             </View>
         )
     }
