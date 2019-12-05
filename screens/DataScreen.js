@@ -10,6 +10,7 @@ import {
   Button,
   View,
   Dimensions,
+  RefreshControl,
 } from 'react-native';
 
 import {
@@ -71,6 +72,7 @@ class AverageExpensesChart extends React.Component {
     }
     async componentDidMount() {
         this.getData(this.props.view)
+        this.props.addRefreshHandler(() => this.getData(this.props.view))
     }
     getData = async (range = "week") => {
         var res = await firebase
@@ -273,8 +275,9 @@ class ExpenseDistribution extends React.Component {
       ];
     componentDidMount() {
         this.getData()
+        this.props.addRefreshHandler(() => this.getData())
     }
-    getData = async (range = "week") => {
+    getData = async () => {
         var res = await firebase
         .firestore()
         .collection("expenses")
@@ -342,6 +345,20 @@ class ExpenseDistribution extends React.Component {
 }
 
 export default class DataScreen extends React.Component {
+    state = {
+        refreshing: false,
+    }
+    cbs = []
+    addRefreshHandler = (cb) => {
+        this.cbs.push(cb)
+    }
+    refresh = async () => {
+        this.setState({refreshing: true})
+        for (let cb in this.cbs) {
+            await this.cbs[cb]()
+        }
+        this.setState({refreshing: false})
+    }
     render() {
         return (
             <View style={{flex: 1}}>
@@ -349,10 +366,10 @@ export default class DataScreen extends React.Component {
                     <Text style={styles.legendItem}>Total</Text>
                     {Object.keys(colors).map((c) => (<Text style={[styles.legendItem, {backgroundColor: colors[c]}]} key={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</Text>))}
                 </View>
-                <ScrollView style={styles.container} contentContainerStyle={{}}>
-                    <AverageExpensesChart view="week" />
-                    <AverageExpensesChart view="month" />
-                    <ExpenseDistribution />
+                <ScrollView style={styles.container} contentContainerStyle={{}} refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.refresh} />}>
+                    <AverageExpensesChart addRefreshHandler={this.addRefreshHandler} view="week" />
+                    <AverageExpensesChart addRefreshHandler={this.addRefreshHandler} view="month" />
+                    <ExpenseDistribution addRefreshHandler={this.addRefreshHandler} />
                 </ScrollView>
             </View>
         )
