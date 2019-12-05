@@ -29,10 +29,10 @@ export default class ExpenseScreen extends Component {
             <View style={styles.container}>
                 <Ionicons style={styles.close} size={48} name={Platform.OS == "ios"?"ios-close":"md-close"} onPress={()=>this.props.navigation.goBack()} />
                 <Text style= {{fontSize: 60,fontFamily: "Comfortaa",textAlign: "center",}}> {this.props.navigation.state.params.title}</Text>
-                <Text style= {{fontSize: 35,fontFamily: "Comfortaa",textAlign: "center", marginTop: 15}}>{'Amount: '+'$'+parseFloat(this.props.navigation.state.params.amount).toFixed(2)}</Text>
-                <Text style= {{fontSize: 35,fontFamily: "Comfortaa",textAlign: "center", marginTop: 15}}>{'Type: ' +this.props.navigation.state.params.category}</Text>
-                <Text style= {{fontSize: .1,textAlign: "center"}}>{this.props.navigation.state.params.user}</Text>
-                <Text style= {{fontSize: 35,fontFamily: "Comfortaa",textAlign: "center", marginTop: 15}}>{'Date: ' +new Date(this.props.navigation.state.params.date).toDateString()}</Text>
+                <Text style= {{fontSize: 35,fontFamily: "Comfortaa",textAlign: "center", marginTop: 15}}>Amount: ${parseFloat(this.props.navigation.state.params.amount).toFixed(2)}</Text>
+                <Text style= {{fontSize: 35,fontFamily: "Comfortaa",textAlign: "center", marginTop: 15}}>Type: {this.props.navigation.state.params.category}</Text>
+                {/*<Text style= {{fontSize: 35,textAlign: "center"}}>{this.props.navigation.state.params.user}</Text>*/}
+                <Text style= {{fontSize: 35,fontFamily: "Comfortaa",textAlign: "center", marginTop: 15}}>Date: {new Date(this.props.navigation.state.params.date).toDateString()}</Text>
                 <Image style={{width: 400, height: 400,marginTop: 30, marginLeft: 7.5}} source={{uri: `data:image/jpg;base64,${this.base64}`}} />
             </View>
         )
