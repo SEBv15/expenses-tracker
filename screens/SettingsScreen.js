@@ -41,7 +41,6 @@ export default class SettingsScreen extends React.Component {
         <Text style={styles.email}>{firebase.auth().currentUser.email}</Text>
         {!firebase.auth().currentUser.emailVerified?(
           <React.Fragment>
-            <Text style={{textAlign: "center", marginHorizontal: 48, fontSize: 16}}>Email is not verified. Verify to enable password recovery.</Text>
             <Button type="outline" loading={this.state.verifying} loadingProps={{color: "#FFFFFF"}} titleStyle={{color: "white"}} buttonStyle={styles.btn} title="Verify Email" onPress={this.verify} />
           </React.Fragment>
           ):null}
