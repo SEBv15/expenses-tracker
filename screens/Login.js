@@ -8,7 +8,8 @@ import {
     TouchableOpacity,
     View,
     StatusBar,
-    KeyboardAvoidingView
+    KeyboardAvoidingView,
+    Alert
   } from 'react-native';
 
 import { Input, Button } from 'react-native-elements'
@@ -71,6 +72,29 @@ export default class Login extends Component {
     handleCancel = () => {
         this.props.navigation.goBack()
     }
+    resetEmail = () => {
+        if (this.state.email != "") {
+            Alert.alert(
+                'Reset Password',
+                'Send a password reset email to '+this.state.email+'?',
+                [
+                {
+                    text: 'No',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                {text: 'Yes', onPress: () => {
+                    firebase.auth().sendPasswordResetEmail(this.state.email).then(() => {
+                        Alert.alert('Email sent!')
+                    }).catch((error) => {
+                        Alert.alert("An error occurred", String(error).replace("Error: ", ""))
+                    })
+                }},
+                ],
+                {cancelable: false},
+            );
+        }
+    }
     render() {
         return (
             <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
@@ -95,6 +119,11 @@ export default class Login extends Component {
                     onChangeText={value => this.setState({password: value})}
                     editable={!this.state.isSubmitting}
                     />
+                {this.props.navigation.getParam("isActuallySignUp", false)?null:(
+                    <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
+                        <Button titleStyle={{color: "#777", fontWeight: "400", fontFamily: "normal"}} title="Reset Password" type="clear" onPress={()=>this.resetEmail()} />
+                    </View>
+                )}
                 <View style={styles.buttons}>
                     <Button
                         title="Cancel"

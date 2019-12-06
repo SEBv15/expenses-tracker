@@ -13,6 +13,23 @@ import * as firebase from 'firebase';
 import { Button } from 'react-native-elements'
 
 export default class SettingsScreen extends React.Component {
+  state = {
+    verifying: false
+  }
+  verify = async () => {
+    this.setState({verifying: true})
+    await firebase.auth().currentUser.reload()
+    if (firebase.auth().currentUser.emailVerified) {
+      this.setState({verifying: false})
+      return
+    }
+    firebase.auth().currentUser.sendEmailVerification().then(() => {
+      this.setState({verifying: false})
+    }).catch((error) => {
+      this.setState({verifying: false})
+      alert(error)
+    });
+  }
   logout = () => {
     firebase.auth().signOut()
     this.props.navigation.dangerouslyGetParent().dangerouslyGetParent().dangerouslyGetParent().navigate("Auth")
@@ -22,9 +39,13 @@ export default class SettingsScreen extends React.Component {
       <View style={styles.container}>
         <Text style={styles.title}>Settings</Text>
         <Text style={styles.email}>{firebase.auth().currentUser.email}</Text>
-        <Text>{firebase.auth().currentUser.emailVerified?"Verified":"Not Verified"}</Text>
-        <Button title="Verify" onPress={()=>firebase.auth().currentUser.sendEmailVerification()} />
-        <Button type="outline" titleStyle={{color: "black"}} buttonStyle={styles.logout} title="Logout" onPress={this.logout} />
+        {!firebase.auth().currentUser.emailVerified?(
+          <React.Fragment>
+            <Text style={{textAlign: "center", marginHorizontal: 48, fontSize: 16}}>Email is not verified. Verify to enable password recovery.</Text>
+            <Button type="outline" loading={this.state.verifying} loadingProps={{color: "#000"}} titleStyle={{color: "black"}} buttonStyle={styles.btn} title="Verify Email" onPress={this.verify} />
+          </React.Fragment>
+          ):null}
+        <Button type="outline" titleStyle={{color: "#a00"}} buttonStyle={[styles.btn, styles.logout]} title="Logout" onPress={this.logout} />
       </View>
     )
   }
@@ -39,16 +60,22 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 48,
     textAlign: "center",
-    fontFamily: "Comfortaa-Bold"
+    fontFamily: "Comfortaa-Bold",
   },
   email: {
-    textAlign: "center"
+    textAlign: "center",
+    fontFamily: "Comfortaa",
+    fontSize: 18,
+    marginBottom: 16,
   },
   logout: {
+    borderColor: "#a00",
+  },
+  btn: {
     borderRadius: 40,
     borderWidth: 3,
     borderColor: "#000",
     marginTop: 12,
-    marginHorizontal: 64
+    marginHorizontal: 64,
   }
 })
