@@ -11,7 +11,6 @@ import {
   View,
   SectionList,
   ActivityIndicator,
-  Dimensions,
 } from 'react-native';
 import { NavigationEvents } from 'react-navigation';
 
@@ -170,7 +169,6 @@ export default class HomeScreen extends React.Component {
           renderItem={({ item }) => <Expense {...item} navigate={this.props.navigation.navigate} />}
           ItemSeparatorComponent={() => <View style={{height: 1, backgroundColor: "#eee", marginHorizontal: 12}} />}
           ListFooterComponent={() => <View style={{height: 70}}>{(this.state.loading?<ActivityIndicator color="#000" style={{marginTop: 8}} size="small" />:null)}</View>}
-          ListEmptyComponent={() => <View style={{flex: 1, justifyContent: "center", marginTop: Dimensions.get("window").height / 3}}><Text style={{textAlign: "center", fontFamily: "Comfortaa-SemiBold", fontSize: 32, marginHorizontal: 36, color: "#aaa"}}>No expenses yet. Add some!</Text></View>}
           stickySectionHeadersEnabled={true}
           onEndReached={()=>this.loadMore()}
           onRefresh={this.refresh}

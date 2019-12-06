@@ -7,10 +7,10 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Button,
   View,
   Dimensions,
   RefreshControl,
-  ActivityIndicator,
 } from 'react-native';
 
 import {
@@ -21,8 +21,6 @@ import {
     ContributionGraph,
     StackedBarChart
 } from 'react-native-chart-kit'
-
-import { Input, Button, Overlay, ButtonGroup } from 'react-native-elements'
 
 import * as firebase from 'firebase';
 import 'firebase/firestore';
@@ -70,17 +68,13 @@ class AverageExpensesChart extends React.Component {
         color: {
             "week": "#05668d",
             "month": "#37718e"
-        },
-        loading: true,
+        }
     }
     async componentDidMount() {
         this.getData(this.props.view)
         this.props.addRefreshHandler(() => this.getData(this.props.view))
     }
-    line = {};
     getData = async (range = "week") => {
-        this.setState({loading: true})
-
         var res = await firebase
         .firestore()
         .collection("expenses")
@@ -111,7 +105,6 @@ class AverageExpensesChart extends React.Component {
         }
 
         //console.log("DOCS", res.docs)
-        var total = 0;
 
         if (range == "week") {
             for (var i = 6; i >= 0; i--) {
@@ -127,14 +120,13 @@ class AverageExpensesChart extends React.Component {
                 for (var doc of res.docs) {
                     if (moment(doc.data().date).isSame(moment().subtract(6 - i, 'days'), 'd')) {
                         this.line.datasets[0].data[i] += parseFloat(doc.data().amount)
-                        total += this.line.datasets[0].data[i]
                         if (categoryToNum(doc.data().category) != -1)
                             this.line.datasets[categoryToNum(doc.data().category) + 1].data[i] += parseFloat(doc.data().amount)
                     }
                 }
             }
         } else if (range == "month") {
-            for (var i = 29; i >= 0; i--) {
+            for (var i = 30; i >= 0; i--) {
                 if (i % 6 == 3)
                     this.line.labels.push(moment().subtract(i, 'days').format("MM/DD"))
                 else 
@@ -145,9 +137,8 @@ class AverageExpensesChart extends React.Component {
                 }
 
                 for (var doc of res.docs) {
-                    if (moment(doc.data().date).isSame(moment().subtract(29 - i, 'days'), 'd')) {
+                    if (moment(doc.data().date).isSame(moment().subtract(30 - i, 'days'), 'd')) {
                         this.line.datasets[0].data[i] += parseFloat(doc.data().amount)
-                        total += this.line.datasets[0].data[i]
                         if (categoryToNum(doc.data().category) != -1)
                             this.line.datasets[categoryToNum(doc.data().category) + 1].data[i] += parseFloat(doc.data().amount)
                     }
@@ -155,50 +146,122 @@ class AverageExpensesChart extends React.Component {
             }
         }
         console.log(this.line)
-        this.setState({loading: false, avg: total / ((range == "week")?7:30)})
+        this.setState({loading: false})
+    }
+    line = {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+        datasets: [
+          {
+            data: [20, 45, 28, 80, 99, 43],
+            strokeWidth: 2, // optional
+            label: "asdaa"
+          },
+          {
+              data: [29,53,121,23,23,23],
+              color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`
+          }
+        ],
+      };
+    getData = async (range = "week") => {
+        var res = await firebase
+        .firestore()
+        .collection("expenses")
+        .where("user", "==", firebase.auth().currentUser.uid)
+        .orderBy("date", "desc")
+        .endAt(Date.now() - 1000*60*60*24*(range == "week"?7:31))
+        .get()
+
+        this.line = {
+            labels: [],
+            datasets: [
+                {
+                    data: [],
+                    strokeWidth: 2,
+                    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`
+                }
+            ]
+        }
+
+        for (let category of Object.keys(colors)) {
+            let rgb = hexToRgb(colors[category])
+            console.log(rgb)
+            this.line.datasets[categoryToNum(category) + 1] = {
+                data: [],
+                strokeWidth: 2,
+                color: (opacity = 1) => `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`
+            }
+        }
+
+        //console.log("DOCS", res.docs)
+
+        if (range == "week") {
+            for (var i = 6; i >= 0; i--) {
+                if (i != 0)
+                    this.line.labels.push(moment().clone().subtract(i, 'days').format("ddd"))
+                else
+                    this.line.labels.push("Today");
+
+                for (var j = 0; j <= 5; j++) {
+                    this.line.datasets[j].data[i] = 0
+                }
+
+                for (var doc of res.docs) {
+                    if (moment(doc.data().date).isSame(moment().subtract(6 - i, 'days'), 'd')) {
+                        this.line.datasets[0].data[i] += parseFloat(doc.data().amount)
+                        if (categoryToNum(doc.data().category) != -1)
+                            this.line.datasets[categoryToNum(doc.data().category) + 1].data[i] += parseFloat(doc.data().amount)
+                    }
+                }
+            }
+        } else if (range == "month") {
+            for (var i = 30; i >= 0; i--) {
+                if (i % 6 == 3)
+                    this.line.labels.push(moment().subtract(i, 'days').format("MM/DD"))
+                else 
+                    this.line.labels.push("")
+
+                for (var j = 0; j <= 5; j++) {
+                    this.line.datasets[j].data[i] = 0
+                }
+
+                for (var doc of res.docs) {
+                    if (moment(doc.data().date).isSame(moment().subtract(30 - i, 'days'), 'd')) {
+                        this.line.datasets[0].data[i] += parseFloat(doc.data().amount)
+                        if (categoryToNum(doc.data().category) != -1)
+                            this.line.datasets[categoryToNum(doc.data().category) + 1].data[i] += parseFloat(doc.data().amount)
+                    }
+                }
+            }
+        }
+        console.log(this.line)
+        this.setState({loading: false})
     }
     render() {
         return (
             <View style={{backgroundColor: this.state.color[this.props.view], paddingVertical: 8}}>
-                <Text style={{fontSize: 24, color: "white", fontFamily: "Comfortaa-SemiBold", marginHorizontal: 16, marginTop: 16, marginBottom: 0}}>This {this.props.view == "week"?"Week":"Month"}</Text>
-                {this.state.loading?(
-                <ActivityIndicator color="#fff" style={{height: 220 + 24 + 16, marginVertical: 8}} size="large" />
-                ):(
-                <React.Fragment>
-                    <Text style={{
-                        fontFamily: "Comfortaa",
-                        fontSize: 16,
-                        color: "white",
-                        opacity: 0.7,
-                        marginHorizontal: 16,
-                        marginBottom: 16,
-                        marginTop: 0,
-                        height: 24,
-                    }}>Daily Avg: <Text style={{fontFamily: "space-mono"}}>${this.state.avg.toFixed(2)}</Text></Text>
-                    <LineChart
-                        data={this.line}
-                        width={Dimensions.get('window').width} // from react-native
-                        height={220}
-                        yAxisLabel={'$'}
-                        chartConfig={{
-                            backgroundColor: this.state.color[this.props.view],
-                            backgroundGradientFrom: this.state.color[this.props.view],
-                            backgroundGradientTo: this.state.color[this.props.view],
-                            decimalPlaces: 2, // optional, defaults to 2dp
-                            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                            style: {
-                                borderRadius: 16
-                            }
-                        }}
-                        bezier
-                        style={{
-                            marginVertical: 8,
-                            borderRadius: 16,
-                            marginRight: 0
-                        }}
-                    />
-                </React.Fragment>
-                )}
+                <Text style={{fontSize: 24, color: "white", fontFamily: "Comfortaa-SemiBold", marginHorizontal: 16, marginVertical: 16}}>This {this.props.view == "week"?"Week":"Month"}</Text>
+                <LineChart
+                    data={this.line}
+                    width={Dimensions.get('window').width} // from react-native
+                    height={220}
+                    yAxisLabel={'$'}
+                    chartConfig={{
+                        backgroundColor: this.state.color[this.props.view],
+                        backgroundGradientFrom: this.state.color[this.props.view],
+                        backgroundGradientTo: this.state.color[this.props.view],
+                        decimalPlaces: 2, // optional, defaults to 2dp
+                        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                        style: {
+                            borderRadius: 16
+                        }
+                    }}
+                    bezier
+                    style={{
+                        marginVertical: 8,
+                        borderRadius: 16,
+                        marginRight: 0
+                    }}
+                />
             </View>
         )
     }
@@ -206,27 +269,20 @@ class AverageExpensesChart extends React.Component {
 
 class ExpenseDistribution extends React.Component {
     state = {
-        color: "#18314f",
-        loading: true,
-        range: 0,
-        total: 0,
+        color: "#18314f"
     }
     data = [
       ];
-    buttons = ["Week", "Month", "All"]
     componentDidMount() {
         this.getData()
         this.props.addRefreshHandler(() => this.getData())
     }
-    getData = async (range) => {
-        this.setState({loading: true})
-
+    getData = async () => {
         var res = await firebase
         .firestore()
         .collection("expenses")
         .where("user", "==", firebase.auth().currentUser.uid)
         .orderBy("date", "desc")
-        .endBefore(range == 2?0:(moment().subtract((range?30:7), 'days').valueOf()))
         .get()
 
         this.data = []
@@ -246,90 +302,42 @@ class ExpenseDistribution extends React.Component {
         }
 
         //console.log("DOCS", res.docs)
-        var total = 0;
 
         for (let doc of res.docs) {
             if (categoryToNum(doc.data().category) >= 0)
                 this.data[categoryToNum(doc.data().category)].amount += parseFloat(doc.data().amount)
-            total += parseFloat(doc.data().amount)
         }
         console.log(this.data)
-        this.setState({loading: false, total: total})
-    }
-    updateRange = (r) => {
-        this.setState({range: r})
-        this.getData(r);
+        this.setState({loading: false})
     }
     render() {
         return (
             <View style={{backgroundColor: this.state.color}}>
-                <Text style={{fontSize: 24, color: "white", fontFamily: "Comfortaa-SemiBold", marginHorizontal: 16, marginTop: 16}}>Makeup</Text>
-                {this.state.loading?(
-                <ActivityIndicator size="large" color="#fff" style={{height: 220 + 24 + 16}} />
-                ):(
-                <React.Fragment>
-                    <Text style={{
-                        fontFamily: "Comfortaa",
-                        fontSize: 16,
-                        color: "white",
-                        opacity: 0.7,
-                        marginHorizontal: 16,
-                        marginBottom: 16,
-                        marginTop: 0,
-                        height: 24,
-                    }}>Total: <Text style={{fontFamily: "space-mono"}}>${this.state.total.toFixed(2)}</Text></Text>
-                    <PieChart
-                        data={this.data}
-                        width={Dimensions.get("window").width}
-                        height={220}
-                        chartConfig={{
-                            backgroundColor: "#e26a00",
-                            backgroundGradientFrom: "#fb8c00",
-                            backgroundGradientTo: "#ffa726",
-                            decimalPlaces: 2, // optional, defaults to 2dp
-                            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                            style: {
-                            borderRadius: 16
-                            },
-                            propsForDots: {
-                            r: "6",
-                            strokeWidth: "2",
-                            stroke: "#ffa726"
-                            }
-                        }}
-                        accessor="amount"
-                        backgroundColor="transparent"
-                        paddingLeft="15"
-                        />
-                    </React.Fragment>
-
-                )}
-                <ButtonGroup
-                    onPress={this.updateRange}
-                    selectedIndex={this.state.range}
-                    buttons={this.buttons}
-                    containerStyle={{
-                        height: 36,
-                        borderWidth: 0, 
-                        backgroundColor: "transparent",
-                        marginBottom: 24
-                    }}
-                    buttonStyle={{
-                        backgroundColor: "rgba(255,255,255,0.3)",
-                    }}
-                    selectedButtonStyle={{
-                        backgroundColor: "white"
-                    }}
-                    textStyle={{
-                        color: "white"
-                    }}
-                    innerBorderStyle={{
-                        color: "rgba(255,255,255,0.4)"
-                    }}
-                    selectedTextStyle={{
-                        color: this.state.color
-                    }}
+                <Text style={{fontSize: 24, color: "white", fontFamily: "Comfortaa-SemiBold", marginHorizontal: 16, marginVertical: 16}}>Makeup</Text>
+                <PieChart
+                    data={this.data}
+                    width={Dimensions.get("window").width}
+                    height={220}
+                    chartConfig={{
+                        backgroundColor: "#e26a00",
+                        backgroundGradientFrom: "#fb8c00",
+                        backgroundGradientTo: "#ffa726",
+                        decimalPlaces: 2, // optional, defaults to 2dp
+                        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                        style: {
+                          borderRadius: 16
+                        },
+                        propsForDots: {
+                          r: "6",
+                          strokeWidth: "2",
+                          stroke: "#ffa726"
+                        }
+                      }}
+                    accessor="amount"
+                    backgroundColor="transparent"
+                    paddingLeft="15"
+                    absolute
                     />
             </View>
         )
@@ -353,9 +361,9 @@ export default class DataScreen extends React.Component {
     }
     render() {
         return (
-            <View style={{flex: 1, backgroundColor: "#05668d"}}>
+            <View style={{flex: 1}}>
                 <View style={styles.legend}>
-                    <Text style={[styles.legendItem, {backgroundColor: "white"}]}>Total</Text>
+                    <Text style={styles.legendItem}>Total</Text>
                     {Object.keys(colors).map((c) => (<Text style={[styles.legendItem, {backgroundColor: colors[c]}]} key={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</Text>))}
                 </View>
                 <ScrollView style={styles.container} contentContainerStyle={{}} refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.refresh} />}>
@@ -375,7 +383,7 @@ const styles = StyleSheet.create({
     legend: {
         flexDirection: "row",
         borderBottomWidth: 1,
-        borderBottomColor: "#777",
+        borderBottomColor: "#ddd",
     },
     legendItem: {
         flex: 1,
