@@ -104,6 +104,7 @@ export default class HomeScreen extends React.Component {
   expenses = [
 
   ]
+  lastExpense = null;
   componentDidMount() {
     this.loadExpenses()
   }
@@ -140,10 +141,12 @@ export default class HomeScreen extends React.Component {
       }
       this.expenses[this.expenses.length - 1].data.push({...doc.data(), ...{firestoreRef: doc.ref}})
     }
-    this.setState({lastExpense: data.docs[data.docs.length - 1], loading: false})
+    this.lastExpense = data.docs[data.docs.length - 1]
+    this.setState({loading: false})
   }
   loadMore = () => {
-    this.loadExpenses(this.state.lastExpense)
+    if (!this.state.loading)
+      this.loadExpenses(this.lastExpense)
   }
   refresh = async () => {
     this.setState({refreshing: true})
