@@ -22,6 +22,8 @@ export default class SettingsScreen extends React.Component {
       <View style={styles.container}>
         <Text style={styles.title}>Settings</Text>
         <Text style={styles.email}>{firebase.auth().currentUser.email}</Text>
+        <Text>{firebase.auth().currentUser.emailVerified?"Verified":"Not Verified"}</Text>
+        <Button title="Verify" onPress={()=>firebase.auth().currentUser.sendEmailVerification()} />
         <Button type="outline" titleStyle={{color: "black"}} buttonStyle={styles.logout} title="Logout" onPress={this.logout} />
       </View>
     )
