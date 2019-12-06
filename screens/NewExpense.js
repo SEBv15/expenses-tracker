@@ -67,7 +67,8 @@ export default class NewExpense extends Component {
         if (this.state.title != "" && this.state.amount != "" && this.state.category != "default") {
             this.setState({saving: true})
             db.collection("photos").add({
-                base64: this.state.img64
+                base64: this.state.img64,
+                user: firebase.auth().currentUser.uid,
             }).then((ref) => {
                 expenses.add({
                     user: firebase.auth().currentUser.uid,
