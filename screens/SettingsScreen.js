@@ -37,15 +37,15 @@ export default class SettingsScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Settings</Text>
+        <Text style= {styles.title}>Settings</Text>
         <Text style={styles.email}>{firebase.auth().currentUser.email}</Text>
         {!firebase.auth().currentUser.emailVerified?(
           <React.Fragment>
             <Text style={{textAlign: "center", marginHorizontal: 48, fontSize: 16}}>Email is not verified. Verify to enable password recovery.</Text>
-            <Button type="outline" loading={this.state.verifying} loadingProps={{color: "#000"}} titleStyle={{color: "black"}} buttonStyle={styles.btn} title="Verify Email" onPress={this.verify} />
+            <Button type="outline" loading={this.state.verifying} loadingProps={{color: "#FFFFFF"}} titleStyle={{color: "white"}} buttonStyle={styles.btn} title="Verify Email" onPress={this.verify} />
           </React.Fragment>
           ):null}
-        <Button type="outline" titleStyle={{color: "#a00"}} buttonStyle={[styles.btn, styles.logout]} title="Logout" onPress={this.logout} />
+        <Button type="outline" titleStyle={{color: "#FFFFFF"}} buttonStyle={[styles.btn, styles.logout]} title="Logout" onPress={this.logout} />
       </View>
     )
   }
@@ -61,20 +61,22 @@ const styles = StyleSheet.create({
     fontSize: 48,
     textAlign: "center",
     fontFamily: "Comfortaa-Bold",
+    color: "#FFFFFF"
   },
   email: {
     textAlign: "center",
     fontFamily: "Comfortaa",
     fontSize: 18,
     marginBottom: 16,
+    color: "#FFFFFF"
   },
   logout: {
-    borderColor: "#a00",
+    borderColor: "#FFFFFF",
   },
   btn: {
     borderRadius: 40,
     borderWidth: 3,
-    borderColor: "#000",
+    borderColor: "#FFFFFF",
     marginTop: 12,
     marginHorizontal: 64,
   }
