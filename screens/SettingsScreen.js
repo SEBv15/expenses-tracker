@@ -42,10 +42,10 @@ export default class SettingsScreen extends React.Component {
         {!firebase.auth().currentUser.emailVerified?(
           <React.Fragment>
             <Text style={{textAlign: "center", marginHorizontal: 48, fontSize: 16}}>Email is not verified. Verify to enable password recovery.</Text>
-            <Button type="outline" loading={this.state.verifying} loadingProps={{color: "#000"}} titleStyle={{color: "black"}} buttonStyle={styles.btn} title="Verify Email" onPress={this.verify} />
+            <Button type="outline" loading={this.state.verifying} loadingProps={{color: "#FFFFFF"}} titleStyle={{color: "white"}} buttonStyle={styles.btn} title="Verify Email" onPress={this.verify} />
           </React.Fragment>
           ):null}
-        <Button type="outline" titleStyle={{color: "#a00"}} buttonStyle={[styles.btn, styles.logout]} title="Logout" onPress={this.logout} />
+        <Button type="outline" titleStyle={{color: "#FFFFFF"}} buttonStyle={[styles.btn, styles.logout]} title="Logout" onPress={this.logout} />
       </View>
     )
   }
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF"
   },
   logout: {
-    borderColor: "#a00",
+    borderColor: "#FFFFFF",
   },
   btn: {
     borderRadius: 40,
