@@ -61,20 +61,14 @@ const styles = StyleSheet.create({
     fontSize: 48,
     textAlign: "center",
     fontFamily: "Comfortaa-Bold",
-<<<<<<< HEAD
     color: "#FFFFFF"
-  },
-  email: {
-    textAlign: "center",
-    color: "#FFFFFF"
-=======
   },
   email: {
     textAlign: "center",
     fontFamily: "Comfortaa",
     fontSize: 18,
     marginBottom: 16,
->>>>>>> fd5914d6977ba8d2ac1dac17f03c88076a207dac
+    color: "#FFFFFF"
   },
   logout: {
     borderColor: "#a00",
