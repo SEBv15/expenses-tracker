@@ -7,6 +7,7 @@ import MainTabNavigator from './MainTabNavigator';
 import NewExpense from '../screens/NewExpense';
 import CameraScreen from '../screens/CameraScreen';
 import ExpenseScreen from '../screens/ExpenseScreen';
+import PhotoScreen from '../screens/PhotoScreen';
 
 export default createStackNavigator({
     MainTabNavigator: {
@@ -20,6 +21,9 @@ export default createStackNavigator({
     },
     CameraScreen: {
         screen: CameraScreen
+    },
+    Photo: {
+        screen: PhotoScreen
     }
 },
 {

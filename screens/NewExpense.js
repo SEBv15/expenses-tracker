@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {
     Image,
+    ImageBackground,
     Platform,
     ScrollView,
     StyleSheet,
@@ -11,6 +12,7 @@ import {
     DatePickerAndroid, 
     DatePickerIOS,
     Alert,
+    Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -28,6 +30,7 @@ export default class NewExpense extends Component {
         isSubmitting: false,
         chosenDate: new Date(),
         openDatePicker: false,
+        openPhotoSelector: false,
         category: "",
         amount: "",
         img64: "",
@@ -64,7 +67,7 @@ export default class NewExpense extends Component {
         }
         var db = firebase.firestore();
         var expenses = db.collection("expenses")
-        if (this.state.title != "" && this.state.amount != "" && this.state.category != "default") {
+        if (this.state.title != "" && this.state.amount != "" && !isNaN(this.state.amount) && this.state.category != "default") {
             this.setState({saving: true})
             db.collection("photos").add({
                 base64: this.state.img64,
@@ -111,7 +114,7 @@ export default class NewExpense extends Component {
         });
 
         if (!result.cancelled) {
-            this.setState({ img64: result.base64 });
+            this.setState({ img64: result.base64, openPhotoSelector: false});
         }
     };
     launchCamera = async () => {
@@ -123,7 +126,7 @@ export default class NewExpense extends Component {
             base64: true
         })
         if (!cancelled) {
-            this.setState({img64: base64})
+            this.setState({img64: base64, openPhotoSelector: false})
         }
     }
     getPermissionAsync = async () => {
@@ -155,19 +158,22 @@ export default class NewExpense extends Component {
             this.props.navigation.goBack()
         }
     }
+    deleteImage = () => {
+        this.setState({img64: ""})
+    }
     render() {
         return (
             <KeyboardAvoidingView style={styles.outer} behavior="padding" enabled>
                 <Ionicons style={styles.close} size={48} name={Platform.OS == "ios"?"ios-close":"md-close"} onPress={this.handleClose} />
                 <View style={styles.container}>
-                    <Input
-                        placeholder={"New Expense"}
-                        value={this.state.title}
-                        onChangeText={value => this.setState({title: value})}
-                        editable={!this.state.isSubmitting}
-                        containerStyle={{marginTop: 12}}
-                        />
-                    <View style={{flexDirection: "row", justifyContent: "space-between", marginVertical: 16}}>
+                    <View style={{flexDirection: "row"}}>
+                        <Input
+                            placeholder={"New Expense"}
+                            value={this.state.title}
+                            onChangeText={value => this.setState({title: value})}
+                            editable={!this.state.isSubmitting}
+                            containerStyle={{flex: 1}}
+                            />
                         <Input
                             placeholder='0.00'
                             keyboardType="numeric"
@@ -178,20 +184,22 @@ export default class NewExpense extends Component {
                             leftIcon={<Text style={{fontSize: 24, marginRight: 2, color: "#444"}}>$</Text>}
                             inputStyle={{marginLeft: 0}}
                             inputContainerStyle={{borderBottomWidth: 0, marginLeft: 0, paddingLeft: 0}}
-                            containerStyle={{flex: 1}}
+                            containerStyle={{flex: .5}}
                             />
+                    </View>
+                    <View style={{flexDirection: "row", justifyContent: "space-between", marginVertical: 16}}>
                         <TouchableOpacity
                             onPress={this.handleDatePicker}
-                            style={{borderWidth: 1, borderColor: "#ddd", borderRadius: 5, padding: 8, flexDirection: "row", marginRight: 12}}
+                            style={{borderWidth: 1, borderColor: "#ddd", borderRadius: 5, padding: 8, flexDirection: "row", marginLeft: 12}}
                             >
                             <Ionicons style={{marginLeft: 8, marginRight: 8}} size={22} name={Platform.OS == "ios"?"ios-calendar":"md-calendar"} />
                             <Text style={{fontSize: 14, fontFamily: "Comfortaa-Bold", paddingRight: 4}}>{this.state.chosenDate.getMonth()}/{this.state.chosenDate.getDate()}/{this.state.chosenDate.getFullYear()}</Text>
                         </TouchableOpacity>
-                    </View>
-
-                    <RNPickerSelect
+                        <RNPickerSelect
                         onValueChange={value=>this.setState({category: value})}
                         placeholder={{label:"Select a category...", value: 'default'}}
+                        useNativeAndroidPickerStyle={false}
+                        style={pickerSelectStyles}
                         items={[
                             {label: "Groceries", value: 'groceries'},
                             {label: "Clothes", value: 'clothes'},
@@ -199,13 +207,91 @@ export default class NewExpense extends Component {
                             {label: "Supplies", value: 'supplies'},
                             {label: "Miscellaneous", value: 'miscellaneous'},
                         ]} />
-                    {/*<Image style={{width: 200, height: 200}} source={{uri: `data:image/jpg;base64,${this.state.img64}`}} />*/}
-                    <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
-                        <Button buttonStyle={[styles.imgBtn]} type="outline" title="Camera" onPress={() => this.launchCamera()} />
-                        <Button buttonStyle={[styles.imgBtn]} type="outline" title="Gallery" onPress={() => this._pickImage()} />
                     </View>
+
+                    {this.state.img64?(
+                        <ImageBackground
+                            style={{
+                                width: Dimensions.get("window").width - 32, 
+                                height: 100, 
+                                borderRadius: 8, 
+                                marginHorizontal: 8, 
+                                paddingHorizontal: Dimensions.get("window").width/6,
+                                flexDirection: "row", 
+                            }}
+                            imageStyle={{borderRadius: 8, opacity: 0.5}}
+                            source={{uri: `data:image/jpg;base64,${this.state.img64}`}}
+                            >
+                            <TouchableOpacity onPress={()=>this.props.navigation.navigate("Photo", {img64: this.state.img64})} style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+                                <Ionicons name={(Platform.OS == 'ios'?'ios-expand':'md-expand')} size={36} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={()=>this.deleteImage()} style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+                                <Ionicons name={(Platform.OS == 'ios'?'ios-trash':'md-trash')} size={36} />
+                            </TouchableOpacity>
+                         </ImageBackground>
+                    ):(
+                        <Button 
+                            type="outline" 
+                            onPress={()=>this.setState({openPhotoSelector: true})} 
+                            title="Add Photo" 
+                            buttonStyle={{
+                                borderWidth: 1,
+                                borderColor: "#ddd",
+                                borderRadius: 5,
+                                marginHorizontal: 12,
+                                marginVertical: 8
+                            }}
+                            titleStyle={{
+                                color: "black",
+                                fontWeight: "normal",
+                                fontFamily: "normal"
+                            }}
+                            />
+                    )}
+                    <Overlay
+                        isVisible={this.state.openPhotoSelector}
+                        windowBackgroundColor="rgba(255, 255, 255, .5)"
+                        overlayBackgroundColor="white"
+                        width="auto"
+                        onBackdropPress={() => this.setState({ openPhotoSelector: false })}
+                        height="auto"
+                        >
+                        <View style={{paddingVertical: 8, paddingHorizontal: 16}}>
+                            <Text style={{fontSize: 18, fontFamily: "Comfortaa", marginBottom: 8}}>Add Photo</Text>
+                            <TouchableOpacity
+                                onPress={() => this.launchCamera()} 
+                                style={{flexDirection: "row", marginVertical: 4, borderColor: "#eee", borderWidth: 1, padding: 4, borderRadius: 5}}
+                                >
+                                <Ionicons name={Platform.OS == 'ios'?'ios-camera':'md-camera'} size={28} style={{marginLeft: 8, width: 28, marginRight: 18, marginTop: 2}} />
+                                <Text style={{fontSize: 18, fontFamily: "Comfortaa-Bold", paddingRight: 8}}>Camera</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => this._pickImage()} 
+                                style={{flexDirection: "row", marginVertical: 4, borderColor: "#eee", borderWidth: 1, padding: 4, borderRadius: 5}}
+                                >
+                                <Ionicons name={Platform.OS == 'ios'?'ios-image':'md-image'} size={28} style={{marginLeft: 8, width: 28, marginRight: 18, marginTop: 2}} />
+                                <Text style={{fontSize: 18, fontFamily: "Comfortaa-Bold", paddingRight: 8}}>Gallery</Text>
+                            </TouchableOpacity>
+                       </View>
+                    </Overlay>
                     
-                    <Button style={{marginTop: 8}} title="Add" onPress={this.handleAdd} loading={this.state.saving} />
+                    <Button 
+                        titleStyle={{color: "black"}} 
+                        buttonStyle={{
+                            marginTop: 8, 
+                            borderWidth: 2, 
+                            borderColor: "black", 
+                            borderRadius: 5, 
+                            marginHorizontal: 12,
+                            backgroundColor: "transparent",
+                        }} 
+                        loadingProps={{
+                            color: "black"
+                        }}
+                        title="Save" 
+                        onPress={this.handleAdd} 
+                        loading={this.state.saving} 
+                        />
                 </View>
                 <Overlay
                     isVisible={this.state.openDatePicker}
@@ -260,3 +346,33 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
     }
 })
+
+const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+      fontSize: 16,
+      paddingVertical: 12,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      borderColor: 'gray',
+      borderRadius: 5,
+      color: 'black',
+      marginHorizontal: 12,
+      paddingLeft: 30,
+      paddingRight: 30, // to ensure the text is never behind the icon
+    },
+    inputAndroid: {
+      fontSize: 16,
+      paddingHorizontal: 10,
+      paddingVertical: 8,
+      borderWidth: 1,
+      borderColor: '#ddd',
+      borderRadius: 5,
+      color: 'black',
+      marginHorizontal: 12,
+      paddingLeft: 30,
+      paddingRight: 30, // to ensure the text is never behind the icon
+    },
+    viewContainer: {
+        flex: 1
+    }
+  });
