@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     View,
     Button,
+    Alert,
 } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -24,10 +25,32 @@ export default class ExpenseScreen extends Component {
         this.base64 = res.data().base64
         this.setState({loading: false})
     }
+    delete = () => {
+        Alert.alert(
+            'Delete',
+            "Press 'Confirm' to delete this expense",
+            [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              {text: 'Confirm', onPress: async () => {
+                    await this.props.navigation.state.params.firestoreRef.delete()
+                    this.props.navigation.state.params.refresh()
+                    this.props.navigation.goBack()
+                }},
+            ],
+            {cancelable: true},
+          );
+    }
     render() {
         return (
             <View style={styles.container}>
-                <Ionicons style={styles.close} size={48} name={Platform.OS == "ios"?"ios-close":"md-close"} onPress={()=>this.props.navigation.goBack()} />
+                <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                    <Ionicons style={styles.close} size={48} name={Platform.OS == "ios"?"ios-close":"md-close"} onPress={()=>this.props.navigation.goBack()} />
+                    <Ionicons style={styles.delete} size={48} color="red" name={Platform.OS == "ios"?"ios-trash":"md-trash"} onPress={this.delete} />
+                </View>
                 <Text style= {{fontSize: 60,fontFamily: "Comfortaa-Bold",textAlign: "center",color: "#FFD700"}}> {this.props.navigation.state.params.title}</Text>
                 <Text style= {{fontSize: 30,fontFamily: "Comfortaa",textAlign: "left", marginTop: 20,color: "#3CD371"}}>{'Amount: '+'$'+parseFloat(this.props.navigation.state.params.amount).toFixed(2)}</Text>
                 <Text style= {{fontSize: 30,fontFamily: "Comfortaa",textAlign: "left", marginTop: 15,color: "#3CD371"}}>{'Type: ' +this.props.navigation.state.params.category}</Text>
@@ -50,6 +73,10 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginLeft: 16,
     },
+    delete: {
+        marginTop: 20,
+        marginRight: 16,
+    }, 
     expenseAmount: {
         fontSize: 21,
         fontFamily: "space-mono"
