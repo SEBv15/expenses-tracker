@@ -11,9 +11,9 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon-round.png",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/splash-dollar.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -25,7 +25,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.cs125.expensestracker"
+      "bundleIdentifier": "com.cs125.expensestracker",
+      "icon": "./assets/images/icon-square.png"
     },
     "android": {
       "package": "com.cs125.expensestracker"
