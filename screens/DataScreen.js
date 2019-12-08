@@ -102,7 +102,6 @@ class AverageExpensesChart extends React.Component {
 
         for (let category of Object.keys(colors)) {
             let rgb = hexToRgb(colors[category])
-            console.log(rgb)
             this.line.datasets[categoryToNum(category) + 1] = {
                 data: [],
                 strokeWidth: 2,
@@ -110,7 +109,6 @@ class AverageExpensesChart extends React.Component {
             }
         }
 
-        //console.log("DOCS", res.docs)
         var total = 0;
 
         if (range == "week") {
@@ -154,7 +152,6 @@ class AverageExpensesChart extends React.Component {
                 }
             }
         }
-        console.log(this.line)
         this.setState({loading: false, avg: total / ((range == "week")?7:30)})
     }
     render() {
@@ -233,7 +230,6 @@ class ExpenseDistribution extends React.Component {
 
         for (let category of Object.keys(colors)) {
             let rgb = hexToRgb(colors[category])
-            console.log(rgb)
             if (categoryToNum(category) >= 0) {
                 this.data[categoryToNum(category)] = {
                     name: category.charAt(0).toUpperCase() + category.substr(1),
@@ -245,7 +241,6 @@ class ExpenseDistribution extends React.Component {
             }
         }
 
-        //console.log("DOCS", res.docs)
         var total = 0;
 
         for (let doc of res.docs) {
@@ -253,7 +248,6 @@ class ExpenseDistribution extends React.Component {
                 this.data[categoryToNum(doc.data().category)].amount += parseFloat(doc.data().amount)
             total += parseFloat(doc.data().amount)
         }
-        console.log(this.data)
         this.setState({loading: false, total: total})
     }
     updateRange = (r) => {

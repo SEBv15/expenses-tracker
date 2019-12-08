@@ -90,7 +90,7 @@ export default class NewExpense extends Component {
                 'Incomplete Data',
                 'Please input a title and amount and set a category',
                 [
-                  {text: 'OK', onPress: () => console.log('OK Pressed')},
+                  { text: 'OK' }
                 ],
                 {cancelable: true},
               );
@@ -147,12 +147,11 @@ export default class NewExpense extends Component {
                 [
                   {
                     text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel',
                   },
                   {text: 'OK', onPress: () => this.props.navigation.goBack()},
                 ],
-                {cancelable: false},
+                {cancelable: true},
               );
         } else {
             this.props.navigation.goBack()

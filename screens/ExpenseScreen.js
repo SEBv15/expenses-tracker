@@ -32,7 +32,6 @@ export default class ExpenseScreen extends Component {
             [
               {
                 text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
                 style: 'cancel',
               },
               {text: 'Confirm', onPress: async () => {
