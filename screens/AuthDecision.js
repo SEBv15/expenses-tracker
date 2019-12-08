@@ -28,7 +28,7 @@ export default class AuthDecision extends Component {
                     start={[0,0]}
                     end={[1,1]}
                     style={styles.gradient}>
-                    <Text style={styles.title}>Expense Tracker</Text>
+                    <Text style={styles.title}>DuesWhoes</Text>
                     <Button
                         title={"Login"}
                         onPress={this.handleLogin}

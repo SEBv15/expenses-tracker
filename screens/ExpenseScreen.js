@@ -66,9 +66,10 @@ export default class ExpenseScreen extends Component {
                         marginHorizontal: 8,
                     }}
                     onPress={()=>this.swipeToCloseRef.onOpen(this.imageRef)}>
-                    <Image            ref={c => {
-              this.imageRef = c;
-            }} style={{width: Dimensions.get("window").width - 16, height: 100, borderRadius: 8}} source={{uri: `data:image/jpg;base64,${this.base64}`}} />
+                    <Image
+                        ref={c => { this.imageRef = c;}} 
+                        style={{width: Dimensions.get("window").width - 16, height: 100, borderRadius: 8}} 
+                        source={{uri: `data:image/jpg;base64,${this.base64}`}} />
                 </TouchableHighlight>
                 <SwipeCloseImage ref={c => this.swipeToCloseRef = c} imageSource={`data:image/jpg;base64,${this.base64}`} />
             </View>
