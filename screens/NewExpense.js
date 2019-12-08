@@ -296,7 +296,7 @@ export default class NewExpense extends Component {
                     isVisible={this.state.openDatePicker}
                     windowBackgroundColor="rgba(255, 255, 255, .5)"
                     overlayBackgroundColor="white"
-                    width= {500}
+                    width= {Dimensions.get("window").width - 16}
                     onBackdropPress={() => this.setState({ openDatePicker: false })}
                     height="auto"
                     >
