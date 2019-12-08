@@ -11,7 +11,7 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon-round.png",
+    "icon": "./assets/images/icon-round-color.png",
     "splash": {
       "image": "./assets/images/splash-dollar.png",
       "resizeMode": "contain",
@@ -26,7 +26,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.cs125.expensestracker",
-      "icon": "./assets/images/icon-square.png"
+      "_icon": "./assets/images/icon-square.png"
     },
     "android": {
       "package": "com.cs125.expensestracker"
