@@ -83,13 +83,14 @@ const styles = StyleSheet.create({
 
     },
     close: {
-        marginBottom: 10,
-        marginTop: (Platform.OS == 'ios'?40:20),
-        marginLeft: 16,
+        paddingBottom: 10,
+        paddingTop: (Platform.OS == 'ios'?40:20),
+        paddingHorizontal: 16,
     },
     delete: {
-        marginTop: (Platform.OS == 'ios'?40:20),
-        marginRight: 16,
+        paddingBottom: 10,
+        paddingTop: (Platform.OS == 'ios'?40:20),
+        paddingHorizontal: 16,
     }, 
     expenseAmount: {
         fontSize: 21,
