@@ -16,8 +16,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 import * as firebase from 'firebase';
 import 'firebase/firestore';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import SwipeCloseImage from '../components/SwipeCloseImage';
 
 export default class ExpenseScreen extends Component {
     state = {
@@ -65,9 +65,12 @@ export default class ExpenseScreen extends Component {
                         marginTop: 30, 
                         marginHorizontal: 8,
                     }}
-                    onPress={()=>this.props.navigation.navigate("Photo", {img64: this.base64})}>
-                    <Image style={{width: Dimensions.get("window").width - 16, height: 100, borderRadius: 8}} source={{uri: `data:image/jpg;base64,${this.base64}`}} />
+                    onPress={()=>this.swipeToCloseRef.onOpen(this.imageRef)}>
+                    <Image            ref={c => {
+              this.imageRef = c;
+            }} style={{width: Dimensions.get("window").width - 16, height: 100, borderRadius: 8}} source={{uri: `data:image/jpg;base64,${this.base64}`}} />
                 </TouchableHighlight>
+                <SwipeCloseImage ref={c => this.swipeToCloseRef = c} imageSource={`data:image/jpg;base64,${this.base64}`} />
             </View>
         )
     }
