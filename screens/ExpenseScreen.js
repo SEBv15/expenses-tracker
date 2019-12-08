@@ -9,12 +9,15 @@ import {
     View,
     Button,
     Alert,
+    Dimensions,
 } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
 
 import * as firebase from 'firebase';
 import 'firebase/firestore';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 export default class ExpenseScreen extends Component {
     state = {
@@ -55,7 +58,16 @@ export default class ExpenseScreen extends Component {
                 <Text style= {{fontSize: 30,fontFamily: "Comfortaa",textAlign: "left", marginTop: 15,color: "#3CD371"}}>{'Type: ' +this.props.navigation.state.params.category}</Text>
                 <Text style= {{fontSize: .1,textAlign: "center"}}>{this.props.navigation.state.params.user}</Text>
                 <Text style= {{fontSize: 30,fontFamily: "Comfortaa",textAlign: "left", marginTop: 15,color: "#3CD371"}}>{'Date: ' +new Date(this.props.navigation.state.params.date).toDateString()}</Text>
-                <Image style={{width: 400, height: 400,marginTop: 30, marginLeft: 7.5}} source={{uri: `data:image/jpg;base64,${this.base64}`}} />
+                <TouchableHighlight
+                    underlayColor="#000"
+                    style={{
+                        borderRadius: 8,
+                        marginTop: 30, 
+                        marginHorizontal: 8,
+                    }}
+                    onPress={()=>this.props.navigation.navigate("Photo", {img64: this.base64})}>
+                    <Image style={{width: Dimensions.get("window").width - 16, height: 100, borderRadius: 8}} source={{uri: `data:image/jpg;base64,${this.base64}`}} />
+                </TouchableHighlight>
             </View>
         )
     }
