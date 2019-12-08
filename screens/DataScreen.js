@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     legendItem: {
         flex: 1,
         fontSize: 9,
-        paddingTop: 26,
+        paddingTop: (Platform.OS == 'ios'?32:26),
         textAlign: "center",
         paddingBottom: 2,
     },
