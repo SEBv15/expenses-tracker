@@ -53,7 +53,7 @@ export default class ExpenseScreen extends Component {
                     <Ionicons style={styles.close} size={48} name={Platform.OS == "ios"?"ios-close":"md-close"} onPress={()=>this.props.navigation.goBack()} />
                     <Ionicons style={styles.delete} size={48} color="red" name={Platform.OS == "ios"?"ios-trash":"md-trash"} onPress={this.delete} />
                 </View>
-                <Text style= {{fontSize: 60,fontFamily: "Comfortaa-Bold",textAlign: "center",color: "#FFD700"}}> {this.props.navigation.state.params.title}</Text>
+                <Text style= {{fontSize: 60,fontFamily: "Comfortaa-Bold",textAlign: "center",color: "#FFD700", textDecorationLine: "underline"}}> {this.props.navigation.state.params.title}</Text>
                 <Text style= {{fontSize: 30,fontFamily: "Comfortaa",textAlign: "left", marginTop: 20,color: "#3CD371"}}>{'Amount: '+'$'+parseFloat(this.props.navigation.state.params.amount).toFixed(2)}</Text>
                 <Text style= {{fontSize: 30,fontFamily: "Comfortaa",textAlign: "left", marginTop: 15,color: "#3CD371"}}>{'Type: ' +this.props.navigation.state.params.category}</Text>
                 <Text style= {{fontSize: .1,textAlign: "center"}}>{this.props.navigation.state.params.user}</Text>
@@ -84,11 +84,11 @@ const styles = StyleSheet.create({
     },
     close: {
         marginBottom: 10,
-        marginTop: 20,
+        marginTop: (Platform.OS == 'ios'?40:20),
         marginLeft: 16,
     },
     delete: {
-        marginTop: 20,
+        marginTop: (Platform.OS == 'ios'?40:20),
         marginRight: 16,
     }, 
     expenseAmount: {
