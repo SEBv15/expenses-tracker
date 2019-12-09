@@ -26,7 +26,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.cs125.expensestracker",
-      "_icon": "./assets/images/icon-square.png"
+      "icon": "./assets/images/icon-square.png"
     },
     "android": {
       "package": "com.cs125.expensestracker"
