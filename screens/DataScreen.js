@@ -52,6 +52,8 @@ function categoryToNum(category) {
             return 3;
         case "miscellaneous":
             return 4;
+        case "geoff":
+            return 5;
         default:
             return -1;
     }
@@ -63,6 +65,7 @@ var colors = {
     transportation: "#e9c46a",
     supplies: "#f4a261",
     miscellaneous: "#e76f51",
+    geoff: "#ffc0cb"
 }
 
 class AverageExpensesChart extends React.Component {
@@ -118,7 +121,7 @@ class AverageExpensesChart extends React.Component {
                 else
                     this.line.labels.push("Today");
 
-                for (var j = 0; j <= 5; j++) {
+                for (var j = 0; j <= 6; j++) {
                     this.line.datasets[j].data[i] = 0
                 }
 
@@ -138,7 +141,7 @@ class AverageExpensesChart extends React.Component {
                 else 
                     this.line.labels.push("")
 
-                for (var j = 0; j <= 5; j++) {
+                for (var j = 0; j <= 6; j++) {
                     this.line.datasets[j].data[i] = 0
                 }
 
@@ -373,7 +376,7 @@ const styles = StyleSheet.create({
     },
     legendItem: {
         flex: 1,
-        fontSize: 9,
+        fontSize: 8,
         paddingTop: (Platform.OS == 'ios'?32:26),
         textAlign: "center",
         paddingBottom: 2,
