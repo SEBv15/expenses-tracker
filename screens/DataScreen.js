@@ -135,18 +135,25 @@ class AverageExpensesChart extends React.Component {
                 }
             }
         } else if (range == "month") {
-            for (var i = 29; i >= 0; i--) {
-                if (i % 6 == 3)
+            this.line.labels = [
+                "",
+                "",
+                "Before that",
+                "Last Week",
+                "This Week"
+            ]
+            for (var i = 4; i >= 0; i--) {
+                /*if (i % 7 == 1)
                     this.line.labels.push(moment().subtract(i, 'days').format("MM/DD"))
                 else 
-                    this.line.labels.push("")
+                    this.line.labels.push("")*/
 
                 for (var j = 0; j <= 6; j++) {
                     this.line.datasets[j].data[i] = 0
                 }
 
                 for (var doc of res.docs) {
-                    if (moment(doc.data().date).isSame(moment().subtract(29 - i, 'days'), 'd')) {
+                    if (moment(doc.data().date).isSame(moment().subtract(4 - i, 'weeks'), 'week')) {
                         this.line.datasets[0].data[i] += parseFloat(doc.data().amount)
                         total += this.line.datasets[0].data[i]
                         if (categoryToNum(doc.data().category) != -1)
@@ -160,7 +167,7 @@ class AverageExpensesChart extends React.Component {
     render() {
         return (
             <View style={{backgroundColor: this.state.color[this.props.view], paddingVertical: 8}}>
-                <Text style={{fontSize: 24, color: "white", fontFamily: "Comfortaa-SemiBold", marginHorizontal: 16, marginTop: 16, marginBottom: 0}}>This {this.props.view == "week"?"Week":"Month"}</Text>
+                <Text style={{fontSize: 24, color: "white", fontFamily: "Comfortaa-SemiBold", marginHorizontal: 16, marginTop: 16, marginBottom: 0}}>{this.props.view == "week"?"This Week":"Last Weeks"}</Text>
                 {this.state.loading?(
                 <ActivityIndicator color="#fff" style={{height: 220 + 24 + 16, marginVertical: 8}} size="large" />
                 ):(
