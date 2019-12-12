@@ -30,7 +30,8 @@ function CategoryIcon({category}) {
     transportation: "#e9c46a",
     supplies: "#f4a261",
     miscellaneous: "#e76f51",
-    default: "white"
+    default: "white",
+    geoff: "pink"
   }
   function getIcon(category) {
     switch(category) {
@@ -44,6 +45,11 @@ function CategoryIcon({category}) {
         return <Ionicons size={24} style={styles.categoryIcon} name={(Platform.OS == 'ios')?"ios-flower":"md-flower"} />
       case "miscellaneous":
         return <FontAwesome size={24} style={styles.categoryIcon} name="question-circle-o" />
+      case "geoff":
+        return <Image
+            style={{ width: 24, height: 24 }}
+            source={require('../assets/images/geoff.png')}
+          />
       default:
         return null
     }

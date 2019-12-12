@@ -205,6 +205,7 @@ export default class NewExpense extends Component {
                             {label: "Transportation", value: 'transportation'},
                             {label: "Supplies", value: 'supplies'},
                             {label: "Miscellaneous", value: 'miscellaneous'},
+                            {label: "Geoff", value: 'geoff'}
                         ]} />
                     </View>
 
