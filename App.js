@@ -12,14 +12,11 @@ import Login from './screens/Login'
 import { YellowBox } from 'react-native';
 YellowBox.ignoreWarnings(['Setting a timer']);
 
-import configureDB from './helpers/configureDB';
-
 export default class App extends React.Component {
   state = {
     isLoadingComplete: false,
     isAuthenticated: false
   }
-  db = configureDB();
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
       return (
