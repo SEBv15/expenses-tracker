@@ -14,6 +14,8 @@ import * as firebase from 'firebase';
 export default class AuthLoading extends React.Component {
     componentDidMount() {
         firebase.initializeApp(Constants.manifest.extra.firebase);
+        firebase.firestore().enablePersistence()
+
         this.authListenerUnsub = firebase.auth().onAuthStateChanged(user => {
             this.props.navigation.navigate(user ? 'Main' : 'Auth');
         })
